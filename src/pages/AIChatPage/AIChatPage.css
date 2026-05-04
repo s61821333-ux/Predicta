@@ -1,0 +1,116 @@
+/* ── Header row ──────────────────────────── */
+.aichat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.aichat-pip-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface-variant);
+  flex-shrink: 0;
+  font-family: var(--font-family);
+}
+
+.aichat-pip-btn--active {
+  color: var(--color-primary-container);
+}
+
+/* ── Status bar ──────────────────────────── */
+.aichat-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-stack-sm);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+}
+
+.aichat-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: #00c870;
+  box-shadow: 0 0 8px rgba(0, 200, 112, 0.60);
+  flex-shrink: 0;
+}
+
+.aichat-status__model {
+  margin-right: auto;
+  color: var(--color-on-surface-variant);
+}
+
+/* ── Suggested chips ─────────────────────── */
+.aichat-suggested {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aichat-suggested__label {
+  color: var(--color-on-surface-variant);
+}
+
+.aichat-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.aichat-chip {
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-bold);
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  border: 1.5px solid var(--color-outline-variant);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.aichat-chip:hover {
+  background: rgba(255, 107, 0, 0.10);
+  border-color: var(--color-primary-container);
+  color: var(--color-primary-container);
+}
+
+/* ── Messages list ───────────────────────── */
+.aichat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  padding-bottom: 80px; /* room for ChatInputBar above bottom-nav */
+}
+
+/* ── Typing indicator ────────────────────── */
+.aichat-typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.aichat-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-on-surface-variant);
+  animation: aichat-bounce 1.2s infinite;
+}
+
+.aichat-typing span:nth-child(2) { animation-delay: 0.2s; }
+.aichat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes aichat-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%           { transform: translateY(-4px); opacity: 1; }
+}

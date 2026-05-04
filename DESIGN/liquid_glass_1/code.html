@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Predicta Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#e2e2e2",
+                        "primary-container": "#ff6b00",
+                        "tertiary-container": "#989999",
+                        "on-secondary-fixed-variant": "#464746",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-surface-variant": "#5a4136",
+                        "inverse-surface": "#34302c",
+                        "outline": "#8e7164",
+                        "surface": "#fff8f5",
+                        "surface-container-low": "#fbf2ed",
+                        "on-background": "#1e1b18",
+                        "inverse-on-surface": "#f8efea",
+                        "surface-dim": "#e1d8d4",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#5d5f5f",
+                        "secondary-fixed-dim": "#c7c6c5",
+                        "outline-variant": "#e2bfb0",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fff8f5",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e9e1dc",
+                        "surface-container": "#f5ece7",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#ffdbcc",
+                        "on-primary-fixed": "#351000",
+                        "surface-container-high": "#efe6e2",
+                        "inverse-primary": "#ffb693",
+                        "on-primary-container": "#572000",
+                        "primary-fixed-dim": "#ffb693",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-container-highest": "#e9e1dc",
+                        "on-tertiary-container": "#2f3132",
+                        "background": "#fff8f5",
+                        "secondary": "#5e5e5e",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary-container": "#e1dfde",
+                        "surface-tint": "#a04100",
+                        "on-secondary-container": "#636262",
+                        "on-primary-fixed-variant": "#7a3000",
+                        "secondary-fixed": "#e4e2e1",
+                        "on-surface": "#1e1b18",
+                        "primary": "#a04100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "padding-card": "24px",
+                        "gutter-bento": "16px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "margin-page": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Heebo"],
+                        "label-bold": ["Heebo"],
+                        "body-md": ["Heebo"],
+                        "display-xl": ["Heebo"],
+                        "label-light": ["Heebo"],
+                        "headline-lg": ["Heebo"],
+                        "headline-md": ["Heebo"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "letterSpacing": "0.08em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "label-light": ["14px", {"lineHeight": "20px", "fontWeight": "300"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "300"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-top: 1.5px solid rgba(255, 255, 255, 0.5);
+            border-left: 1.5px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.15);
+        }
+        .liquid-glass-intense {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-left: 1.5px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 12px 40px 0 rgba(255, 255, 255, 0.2);
+        }
+        .mesh-gradient {
+            background: radial-gradient(at 0% 0%, rgba(255, 219, 204, 0.4) 0px, transparent 50%),
+                        radial-gradient(at 100% 0%, rgba(255, 107, 0, 0.1) 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.8) 0px, transparent 50%),
+                        radial-gradient(at 0% 100%, rgba(226, 191, 176, 0.3) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen relative overflow-x-hidden mesh-gradient">
+<!-- Ambient Background Blobs -->
+<div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary-fixed blur-[100px] opacity-40 -z-10"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-surface-container-high blur-[80px] opacity-60 -z-10"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-white/20 dark:bg-slate-900/30 backdrop-blur-[32px] border-b border-white/50 dark:border-white/10 shadow-[0_8px_32px_0_rgba(255,255,255,0.15)] font-['Heebo'] font-light tracking-tight">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-3xl">bubble_chart</span>
+<span class="text-2xl font-black text-primary-container tracking-tighter">Predicta</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all rounded-full p-2 cursor-pointer">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-white/50 overflow-hidden shadow-sm">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A small circular profile avatar showing a generic user placeholder on a vibrant orange background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7lOx2UTjmqx8eb27lpcXk9hTe3vM3E3GjwIZCpoS0jXaKbFqYYiTxlK-8dMCinML0uLjv7NcZTVAdq4b-wWAaTNRAQK03Jn3WqPHNv2BvD1oaVeuUUD9HHqtz9anJCxuT44GsQmGhZnteNbZLWG5Lx_HXdJPOmbTUa5s9IcHn4ZmfOK2SVxjNQnZyIuf_nL8wi--U7uRD8sXXk7O772QzrPPoOGpvLskrWks90D2li93DXtEK7B0Xa50dHwmP6FRLwqgUfDLxk0"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-[100px] pb-[120px] px-margin-page max-w-7xl mx-auto space-y-gutter-bento">
+<!-- Dashboard Header -->
+<div class="mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-background">Good Morning, Alex</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">Here is your financial overview for today.</p>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter-bento">
+<!-- Balance Card (Large) -->
+<div class="md:col-span-8 liquid-glass rounded-xl p-padding-card flex flex-col justify-between min-h-[280px] relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest block mb-2">Total Balance</span>
+<h2 class="font-display-xl text-display-xl text-on-background">₪ 124,500</h2>
+</div>
+<span class="material-symbols-outlined text-primary-container text-4xl p-3 liquid-glass rounded-full">account_balance_wallet</span>
+</div>
+<div class="mt-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-sm bg-primary-fixed p-1 rounded-full">arrow_upward</span>
+<span class="font-label-bold text-label-bold text-primary-container">+4.2%</span>
+<span class="font-label-light text-label-light text-secondary">vs last month</span>
+</div>
+</div>
+<!-- Decorative Graphic -->
+<div class="absolute -right-10 -bottom-10 opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-[200px] text-primary-container" style="font-variation-settings: 'FILL' 1;">texture</span>
+</div>
+</div>
+<!-- Quick Action Card -->
+<div class="md:col-span-4 liquid-glass rounded-xl p-padding-card flex flex-col justify-between min-h-[280px]">
+<div>
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest block mb-6">Quick Transfer</span>
+<div class="space-y-4">
+<div class="liquid-glass rounded-lg p-3 flex items-center justify-between border-b-2 border-primary-container/20">
+<span class="font-body-md text-body-md text-tertiary">To: Sarah Jenkins</span>
+<span class="material-symbols-outlined text-secondary">expand_more</span>
+</div>
+<div class="liquid-glass rounded-lg p-3 flex items-center justify-between">
+<span class="font-display-xl text-2xl text-on-background font-bold">₪ 500</span>
+<span class="font-label-bold text-label-bold text-primary-container">ILS</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary-container text-white font-label-bold text-label-bold py-4 rounded-full mt-6 shadow-[0_4px_15px_rgba(255,107,0,0.3)] border-t border-white/40 hover:bg-surface-tint transition-colors">
+                    Send Money
+                </button>
+</div>
+<!-- Spending Chart -->
+<div class="md:col-span-6 liquid-glass rounded-xl p-padding-card min-h-[320px]">
+<div class="flex justify-between items-center mb-6">
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Spending Analysis</span>
+<span class="material-symbols-outlined text-secondary">more_horiz</span>
+</div>
+<!-- Mock Chart Area -->
+<div class="h-[200px] flex items-end justify-between gap-4 px-2">
+<!-- Bars -->
+<div class="w-1/6 flex flex-col items-center gap-2">
+<div class="w-full h-[60%] liquid-glass-intense rounded-t-lg bg-surface-container/50"></div>
+<span class="font-label-light text-label-light text-secondary">Mon</span>
+</div>
+<div class="w-1/6 flex flex-col items-center gap-2">
+<div class="w-full h-[40%] liquid-glass-intense rounded-t-lg bg-surface-container/50"></div>
+<span class="font-label-light text-label-light text-secondary">Tue</span>
+</div>
+<div class="w-1/6 flex flex-col items-center gap-2">
+<div class="w-full h-[80%] liquid-glass-intense rounded-t-lg bg-primary-fixed-dim/80 border-t-primary-container border-t-2"></div>
+<span class="font-label-light text-label-light text-on-background font-bold">Wed</span>
+</div>
+<div class="w-1/6 flex flex-col items-center gap-2">
+<div class="w-full h-[50%] liquid-glass-intense rounded-t-lg bg-surface-container/50"></div>
+<span class="font-label-light text-label-light text-secondary">Thu</span>
+</div>
+<div class="w-1/6 flex flex-col items-center gap-2">
+<div class="w-full h-[70%] liquid-glass-intense rounded-t-lg bg-surface-container/50"></div>
+<span class="font-label-light text-label-light text-secondary">Fri</span>
+</div>
+</div>
+</div>
+<!-- Forecast Section -->
+<div class="md:col-span-6 liquid-glass rounded-xl p-padding-card min-h-[320px] relative overflow-hidden">
+<div class="flex justify-between items-center mb-6 relative z-10">
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">AI Forecast</span>
+<span class="font-label-light text-label-light text-primary-container bg-primary-fixed px-3 py-1 rounded-full">Predictive</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-background mb-1">Expected: ₪ 132K</h3>
+<p class="font-body-md text-body-md text-tertiary">Based on your current trajectory.</p>
+</div>
+<!-- Abstract Line Chart Representation -->
+<div class="absolute bottom-0 left-0 w-full h-[150px] pointer-events-none">
+<svg class="w-full h-full opacity-60" preserveaspectratio="none" viewbox="0 0 100 50">
+<path d="M0,50 Q20,40 40,30 T80,20 T100,10 L100,50 L0,50 Z" fill="url(#grad1)"></path>
+<path d="M0,50 Q20,40 40,30 T80,20 T100,10" fill="none" stroke="#FF6B00" stroke-width="1.5" style="filter: drop-shadow(0 0 8px rgba(255,107,0,0.6));"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#FF6B00;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#FF6B00;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-[40px] border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white/30 dark:bg-black/40 backdrop-blur-[40px] z-50 flex justify-around items-center px-4 md:hidden py-2 font-['Heebo'] text-[10px] font-extrabold uppercase tracking-widest">
+<a class="flex flex-col items-center justify-center bg-[#FF6B00] text-white rounded-full px-5 py-2 shadow-[0_0_15px_rgba(255,107,0,0.4)] scale-110 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home_app_logo</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-600 dark:text-slate-300 px-4 py-2 hover:text-[#FF6B00] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">payments</span>
+            Spend
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-600 dark:text-slate-300 px-4 py-2 hover:text-[#FF6B00] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">psychology</span>
+            Insights
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-600 dark:text-slate-300 px-4 py-2 hover:text-[#FF6B00] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">account_circle</span>
+            Profile
+        </a>
+</nav>
+<!-- Web Navigation (hidden on mobile) -->
+<nav class="hidden md:flex fixed top-4 right-24 z-50 items-center gap-6 font-label-bold text-label-bold">
+<a class="text-primary-container font-bold border-b-2 border-primary-container pb-1" href="#">Home</a>
+<a class="text-secondary hover:text-primary-container transition-colors" href="#">Spend</a>
+<a class="text-secondary hover:text-primary-container transition-colors" href="#">Insights</a>
+<a class="text-secondary hover:text-primary-container transition-colors" href="#">Profile</a>
+</nav>
+</body></html>

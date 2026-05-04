@@ -1,0 +1,41 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  letter-spacing: var(--letter-spacing-label-bold);
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+/* Primary — solid orange */
+.btn--primary {
+  background: var(--color-primary-container);
+  color: #fff;
+  padding: 16px 32px;
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.30);
+  border-top: 1px solid rgba(255, 255, 255, 0.40);
+}
+.btn--primary:hover  { background: var(--color-surface-tint); }
+.btn--primary:active { transform: scale(0.96); }
+
+/* Glass — translucent with blur */
+.btn--glass {
+  background: rgba(255, 255, 255, 0.40);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1.5px solid rgba(255, 255, 255, 0.50);
+  color: var(--color-primary-container);
+  padding: 12px 24px;
+}
+.btn--glass:hover  { background: rgba(255, 255, 255, 0.60); }
+.btn--glass:active { transform: scale(0.96); }
+
+/* Full-width modifier */
+.btn--full { width: 100%; }

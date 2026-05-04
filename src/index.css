@@ -1,0 +1,11 @@
+/* index.css — intentionally minimal; all design tokens live in styles/globals.css */
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}

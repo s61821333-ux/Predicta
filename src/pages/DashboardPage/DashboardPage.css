@@ -1,0 +1,108 @@
+/* ── Monthly summary card ───────────────── */
+.dash-summary-card {
+  padding: var(--spacing-padding-card);
+  border-radius: var(--radius-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+}
+
+.dash-summary__title {
+  color: var(--color-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.dash-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-summary__divider {
+  height: 1px;
+  background: var(--color-outline-variant);
+  margin: 4px 0;
+}
+
+/* ── Budget progress card ───────────────── */
+.dash-budget-card {
+  padding: var(--spacing-padding-card);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+
+.dash-budget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-budget__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dash-budget__item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Recent transactions ────────────────── */
+.dash-recent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+}
+
+.dash-recent__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.dash-recent__link {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary-container);
+  font-family: var(--font-family);
+}
+
+/* ── Transaction row card ───────────────── */
+.dash-txn-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-stack-md);
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+}
+
+.dash-txn__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-txn__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-txn__amount {
+  flex-shrink: 0;
+}

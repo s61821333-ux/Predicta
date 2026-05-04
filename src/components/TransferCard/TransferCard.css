@@ -1,0 +1,48 @@
+.transfer-card {
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-padding-card);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.transfer-card__label {
+  display: block;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label-bold);
+  margin-bottom: var(--spacing-stack-md);
+}
+
+.transfer-card__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+  flex: 1;
+}
+
+/* Each glass-recessed row */
+.transfer-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius);
+  padding: 12px var(--spacing-stack-md);
+  color: var(--color-on-surface-variant);
+  /* glass-recessed applied via className */
+}
+
+.transfer-card__row--recipient {
+  border-bottom: 2px solid rgba(255, 107, 0, 0.15);
+}
+
+.transfer-card__amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-on-background);
+  font-family: var(--font-family);
+}
+
+.transfer-card__currency {
+  color: var(--color-primary-container);
+}

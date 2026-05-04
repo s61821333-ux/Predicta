@@ -1,0 +1,35 @@
+/* AppShell inherits .app-shell, .app-blob, .app-main from App.css globals */
+/* Page-level spacing tweaks for RTL */
+
+.app-shell {
+  direction: rtl;
+}
+
+/* FAB — floating action button for new transaction */
+.fab {
+  position: fixed;
+  bottom: calc(80px + var(--spacing-stack-lg));
+  left: var(--spacing-margin-page);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-container);
+  color: var(--color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 24px rgba(255, 107, 0, 0.40);
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-family);
+  z-index: 50;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fab:active { transform: scale(0.94); }
+
+.fab .material-symbols-outlined {
+  font-size: 28px;
+  font-variation-settings: 'FILL' 1;
+  color: #fff;
+}

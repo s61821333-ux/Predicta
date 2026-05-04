@@ -1,0 +1,78 @@
+.chat-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* AI message — left-aligned, max 85% */
+.chat-bubble-wrap--ai {
+  align-self: flex-start;
+  max-width: 85%;
+}
+
+/* User message — right-aligned, max 75% */
+.chat-bubble-wrap--user {
+  align-self: flex-end;
+  max-width: 75%;
+}
+
+/* Sender label (AI only) */
+.chat-bubble__sender {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  color: var(--color-primary-container);
+}
+
+.chat-bubble__sender-icon {
+  font-size: 16px;
+}
+
+/* Bubble surface */
+.chat-bubble__body {
+  padding: var(--spacing-padding-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-bubble__body--ai {
+  border-radius: var(--radius-lg);
+  border-top-left-radius: var(--radius-sm);
+  /* glass-panel-heavy + liquid-texture applied via className */
+}
+
+.chat-bubble__body--user {
+  border-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.50);
+  text-align: right;
+  /* glass-panel applied via className */
+}
+
+/* Inline bento grid inside a bubble (2-column stat widgets) */
+.chat-bubble__bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-gutter-bento);
+  margin-top: var(--spacing-stack-md);
+}
+
+.chat-bubble__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: var(--spacing-stack-md);
+}
+
+/* Decorative ambient glow behind content */
+.chat-bubble__glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 128px;
+  height: 128px;
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.10) 0%, transparent 70%);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+}

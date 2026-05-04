@@ -1,0 +1,26 @@
+.stat-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  border-radius: var(--radius);
+  gap: 4px;
+}
+
+.stat-widget__label {
+  display: block;
+  color: var(--color-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.stat-widget__value--accent {
+  color: var(--color-primary-container);
+}
+
+.stat-widget__value--muted {
+  color: var(--color-on-surface-variant);
+}

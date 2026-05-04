@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Predicta - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#e2e2e2",
+                      "primary-container": "#ff6b00",
+                      "tertiary-container": "#989999",
+                      "on-secondary-fixed-variant": "#464746",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "on-surface-variant": "#5a4136",
+                      "inverse-surface": "#34302c",
+                      "outline": "#8e7164",
+                      "surface": "#fff8f5",
+                      "surface-container-low": "#fbf2ed",
+                      "on-background": "#1e1b18",
+                      "inverse-on-surface": "#f8efea",
+                      "surface-dim": "#e1d8d4",
+                      "on-secondary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "tertiary": "#5d5f5f",
+                      "secondary-fixed-dim": "#c7c6c5",
+                      "outline-variant": "#e2bfb0",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#fff8f5",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#e9e1dc",
+                      "surface-container": "#f5ece7",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#ffdbcc",
+                      "on-primary-fixed": "#351000",
+                      "surface-container-high": "#efe6e2",
+                      "inverse-primary": "#ffb693",
+                      "on-primary-container": "#572000",
+                      "primary-fixed-dim": "#ffb693",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "surface-container-highest": "#e9e1dc",
+                      "on-tertiary-container": "#2f3132",
+                      "background": "#fff8f5",
+                      "secondary": "#5e5e5e",
+                      "on-secondary-fixed": "#1b1c1b",
+                      "secondary-container": "#e1dfde",
+                      "surface-tint": "#a04100",
+                      "on-secondary-container": "#636262",
+                      "on-primary-fixed-variant": "#7a3000",
+                      "secondary-fixed": "#e4e2e1",
+                      "on-surface": "#1e1b18",
+                      "primary": "#a04100"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "padding-card": "24px",
+                      "gutter-bento": "16px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "margin-page": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Heebo"
+                      ],
+                      "label-bold": [
+                              "Heebo"
+                      ],
+                      "body-md": [
+                              "Heebo"
+                      ],
+                      "display-xl": [
+                              "Heebo"
+                      ],
+                      "label-light": [
+                              "Heebo"
+                      ],
+                      "headline-lg": [
+                              "Heebo"
+                      ],
+                      "headline-md": [
+                              "Heebo"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.08em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "52px",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-light": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "300"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>body {
+    background-color: #fff8f5;
+    background-image: radial-gradient(circle at 15% 50%, rgba(255, 107, 0, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(200, 200, 200, 0.1), transparent 25%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden
+    }
+.liquid-glass-panel {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-left: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.15), 0 20px 50px 0 rgba(0, 0, 0, 0.05)
+    }
+.liquid-glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(142, 113, 100, 0.3);
+    transition: all 0.3s ease
+    }
+.liquid-glass-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #ff6b00;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.1);
+    outline: none
+    }
+.primary-btn-glow {
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 8px 20px rgba(255, 107, 0, 0.3)
+    }
+.floating-accent-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+    top: -100px;
+    left: -100px;
+    filter: blur(40px);
+    z-index: -1
+    }
+.floating-accent-2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 107, 0, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+    bottom: -150px;
+    right: -150px;
+    filter: blur(50px);
+    z-index: -1
+    }
+.bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    z-index: -2;
+    background-image: url(https://lh3.googleusercontent.com/aida/ADBb0uhr-IOFWasei4VzD6VgHYwHpsHCkXi-LayU1CXhYoue8D8enVjdxgZFQw1XwID8Fc6X2ZBIJ1LhfPYK4LwxO3A7VALKiCROK2UkfbUi8isAqSE0v6xIgp2aAAcUiXOSTS3Uy0flb54RStpKntNgpDPLir1FJlZEy62fR3WZQNX9oCoe1qRTIjcHMaa4yGWwuya5cYHUKjlMeA1kGgEQhh0MO8RJsjCFIzQaSsoL45oL0EgJmHsrmSwT44iW0YjTY3bhsrMS209DWw);
+    background-size: cover;
+    background-position: center
+    }</style>
+</head>
+<body class="antialiased text-on-surface">
+<!-- Background Accents -->
+<div class="bg-pattern" data-alt="A sophisticated abstract background pattern featuring soft, flowing liquid geometry in a high-key pearl white setting. The imagery evokes a sense of pristine technical zen, with subtle gradations of light and shadow that create depth without clutter. The overall aesthetic is highly modern, serene, and perfectly aligned with a premium, light-mode interface."></div>
+<div class="floating-accent-1"></div>
+<div class="floating-accent-2"></div>
+<!-- Login Container -->
+<main class="w-full max-w-md px-margin-page relative z-10">
+<div class="liquid-glass-panel rounded-xl p-stack-lg flex flex-col items-center w-full transition-transform duration-300">
+<!-- Brand Logo -->
+<div class="mb-stack-lg text-center">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-2" style="font-variation-settings: 'FILL' 1;">
+                    bubble_chart
+                </span>
+<h1 class="font-headline-lg text-headline-lg text-on-background tracking-tighter">
+                    Predicta
+                </h1>
+</div>
+<!-- Form -->
+<form class="w-full flex flex-col gap-stack-md">
+<div class="relative w-full">
+<label class="font-label-light text-label-light text-on-surface-variant absolute top-0 left-0 transition-all duration-300 transform origin-left peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:font-label-bold peer-focus:text-primary-container" for="phone">
+                        Phone Number
+                    </label>
+<input class="liquid-glass-input w-full pt-6 pb-2 px-0 border-t-0 border-l-0 border-r-0 peer font-body-lg text-body-lg text-on-background bg-transparent placeholder-transparent focus:ring-0" id="phone" name="phone" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mt-2 mb-4 opacity-80">
+                    We'll text you a secure code to log in.
+                </p>
+<!-- Submit Button -->
+<button class="w-full bg-primary-container text-on-primary rounded-full py-4 px-6 font-label-bold text-label-bold primary-btn-glow transition-all duration-200 active:scale-95 flex items-center justify-center gap-2" type="button">
+                    Send Code
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,116 @@
+/* ── Section card ────────────────────────── */
+.settings-section {
+  padding: var(--spacing-padding-card);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+
+.settings-section__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-on-background);
+  padding-bottom: var(--spacing-stack-sm);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+/* ── Settings row ────────────────────────── */
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-stack-md);
+  padding: 4px 0;
+}
+
+.settings-row__icon {
+  color: var(--color-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.settings-row__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-row__desc {
+  color: var(--color-on-surface-variant);
+}
+
+.settings-row__control {
+  flex-shrink: 0;
+}
+
+/* ── Toggle ──────────────────────────────── */
+.settings-toggle {
+  width: 48px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  border: 1.5px solid var(--color-outline-variant);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.settings-toggle--active {
+  background: var(--color-primary-container);
+  border-color: var(--color-primary-container);
+}
+
+.settings-toggle__knob {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+
+.settings-toggle--active .settings-toggle__knob {
+  transform: translateX(-20px);
+}
+
+/* ── Category chips ─────────────────────── */
+.settings-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-cat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-outline-variant);
+}
+
+.settings-cat__remove {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: rgba(0,0,0,0.08);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  color: var(--color-on-surface-variant);
+  padding: 0;
+}
+
+.settings-add-cat {
+  display: flex;
+  gap: var(--spacing-stack-sm);
+  align-items: flex-end;
+}

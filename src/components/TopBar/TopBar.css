@@ -1,0 +1,98 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px var(--spacing-margin-page);
+  /* glass-panel applied via className */
+}
+
+/* ── Brand ─────────────────────────────── */
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar__logo-icon {
+  color: var(--color-primary-container);
+  font-size: 28px;
+}
+
+.topbar__name {
+  color: var(--color-primary-container);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+/* ── Nav links ──────────────────────────── */
+.topbar__nav {
+  display: none;
+  gap: var(--spacing-stack-sm);
+}
+
+@media (min-width: 640px) {
+  .topbar__nav { display: flex; }
+}
+
+.topbar__nav-link {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  letter-spacing: var(--letter-spacing-label-bold);
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  transition: background 0.2s, color 0.2s;
+}
+
+.topbar__nav-link:hover {
+  background: rgba(255, 255, 255, 0.40);
+}
+
+.topbar__nav-link--active {
+  color: var(--color-primary-container);
+  background: rgba(255, 255, 255, 0.30);
+  font-weight: 800;
+}
+
+/* ── Avatar ─────────────────────────────── */
+.topbar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Settings button ────────────────────── */
+.topbar__settings {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface-variant);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.topbar__settings:hover {
+  background: rgba(255, 255, 255, 0.30);
+}

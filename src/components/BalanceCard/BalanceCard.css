@@ -1,0 +1,77 @@
+.balance-card {
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-padding-card);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header row: label + amount | icon */
+.balance-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.balance-card__label {
+  display: block;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label-bold);
+  margin-bottom: var(--spacing-stack-sm);
+}
+
+.balance-card__amount {
+  color: var(--color-on-background);
+}
+
+.balance-card__icon {
+  color: var(--color-primary-container);
+  font-size: 36px;
+  padding: 12px;
+  border-radius: var(--radius-full);
+  /* glass-panel applied via className */
+}
+
+/* Trend row */
+.balance-card__trend {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-stack-sm);
+  margin-top: auto;
+  padding-top: var(--spacing-stack-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.balance-card__trend-arrow {
+  font-size: 16px;
+  color: var(--color-primary-container);
+  background: var(--color-primary-fixed);
+  padding: 4px;
+  border-radius: var(--radius-full);
+}
+
+.balance-card__trend-pct {
+  color: var(--color-primary-container);
+}
+
+.balance-card__trend-label {
+  color: var(--color-secondary);
+}
+
+/* Decorative background icon */
+.balance-card__decoration {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  font-size: 180px;
+  color: var(--color-primary-container);
+  opacity: 0.08;
+  pointer-events: none;
+  line-height: 1;
+}

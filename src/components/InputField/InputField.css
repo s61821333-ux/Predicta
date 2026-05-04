@@ -1,0 +1,42 @@
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-field__label {
+  color: var(--color-on-surface-variant);
+  padding-left: 4px;
+  transition: font-weight 0.2s, color 0.2s;
+}
+
+.input-field__wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  /* glass-recessed applied via className */
+}
+
+.input-field__icon {
+  color: var(--color-tertiary);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.input-field__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-body-md);
+  font-weight: var(--font-weight-body-md);
+  color: var(--color-on-surface);
+  height: 44px;
+}
+
+.input-field__input::placeholder {
+  color: var(--color-tertiary-container);
+}
