@@ -1,36 +1,40 @@
-/* ── App shell ─────────────────────────────────────────────────────────────── */
-/* Only app-level layout lives here. Component styles live in their own files. */
+/* ── App shell layout ──────────────────────────────────────────────────────── */
 
 .app-shell {
   position: relative;
   min-height: 100dvh;
   overflow-x: clip;
+  direction: rtl;
+  min-width: 0;
 }
 
-/* Ambient background blobs */
+/* Ambient blobs — blue aurora (replaces legacy orange blobs) */
 .app-blob {
   position: fixed;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   pointer-events: none;
   z-index: 0;
-  filter: blur(100px);
+  filter: blur(90px);
 }
 .app-blob--top {
   top: -10%;
   left: -10%;
   width: 50vw;
   height: 50vw;
-  background: var(--color-primary-fixed);
-  opacity: 0.40;
+  background: radial-gradient(circle, rgba(61,125,255,.35), rgba(30,58,138,.20));
+  opacity: 0.5;
 }
 .app-blob--bottom {
   bottom: -10%;
   right: -10%;
-  width: 40vw;
-  height: 40vw;
-  background: var(--color-surface-container-high);
-  opacity: 0.60;
+  width: 42vw;
+  height: 42vw;
+  background: radial-gradient(circle, rgba(56,189,248,.22), rgba(14,165,233,.10));
+  opacity: 0.45;
 }
+
+[data-theme="light"] .app-blob--top    { opacity: 0.30; }
+[data-theme="light"] .app-blob--bottom { opacity: 0.25; }
 
 /* ── Main content area ──────────────────────────────────────────────────────── */
 .app-main {
@@ -56,10 +60,8 @@
 }
 
 /* ── Page header ────────────────────────────────────────────────────────────── */
-.page-header { }
-
 .page-subtitle {
-  color: var(--color-secondary);
+  color: var(--text-2);
   margin-top: var(--spacing-stack-sm);
 }
 
@@ -71,20 +73,12 @@
 }
 
 @media (min-width: 640px) {
-  .bento-grid          { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .bento-col-8         { grid-column: span 8; }
-  .bento-col-4         { grid-column: span 4; }
-  .bento-col-6         { grid-column: span 6; }
+  .bento-grid    { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .bento-col-8   { grid-column: span 8; }
+  .bento-col-4   { grid-column: span 4; }
+  .bento-col-6   { grid-column: span 6; }
 }
 
 /* ── Chat section ───────────────────────────────────────────────────────────── */
-.chat-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-stack-md);
-}
-
-.chat-section__title {
-  color: var(--color-on-background);
-  margin-bottom: var(--spacing-stack-sm);
-}
+.chat-section { display: flex; flex-direction: column; gap: var(--spacing-stack-md); }
+.chat-section__title { color: var(--text); margin-bottom: var(--spacing-stack-sm); }

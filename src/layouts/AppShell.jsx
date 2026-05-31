@@ -16,7 +16,7 @@ export default function AppShell({ children }) {
   }
 
   return (
-    <div className="app-shell organic-bg" dir="rtl">
+    <div className="app-shell app-bg" dir="rtl">
       <div className="app-blob app-blob--top"    aria-hidden="true" />
       <div className="app-blob app-blob--bottom" aria-hidden="true" />
 

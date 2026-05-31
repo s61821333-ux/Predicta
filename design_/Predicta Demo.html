@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predicta — Product Demo</title>
+<link rel="stylesheet" href="predicta.css">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body class="app-bg">
+
+<!-- ===== TOP BAR ===== -->
+<div class="gtop">
+  <span data-logo="1"></span>
+  <div class="row gap-s">
+    <span class="badge badge-blue">Product Demo · v1.0</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="on" data-m="dark" data-ic="moon" data-s="16"></span>
+      <span data-m="light" data-ic="sun" data-s="16"></span>
+    </button>
+  </div>
+</div>
+
+<div class="gallery">
+
+  <!-- intro -->
+  <div class="scene-head" style="padding-top:54px">
+    <div class="n">PREDICTA · EXPERIENCE</div>
+    <h2>הדמו המלא של המוצר</h2>
+    <p>שבעה מסכים, שפה אחת — כחול אמון, זכוכית ועברית מלאה. החליפו בין מצב כהה לבהיר למעלה.</p>
+  </div>
+
+  <!-- ============ DESKTOP · LANDING ============ -->
+  <div class="scene-head"><div class="n">01 — LANDING</div><h2>דף הבית</h2><p>הרושם הראשון — בטוח, חכם ומזמין.</p></div>
+  <div class="browser">
+    <div class="browser-bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url"><span data-ic="shield" data-s="14"></span> predicta.app</span>
+      <span style="width:54px"></span>
+    </div>
+    <div class="browser-body">
+      <div class="app-bg" style="padding:0">
+        <!-- nav -->
+        <div class="row between" style="padding:22px 44px">
+          <span data-logo="1"></span>
+          <div class="row gap-s">
+            <button class="btn btn-ghost">כניסה</button>
+            <button class="btn btn-primary">התחל בחינם</button>
+          </div>
+        </div>
+        <!-- hero -->
+        <div style="display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; padding:36px 44px 64px;">
+          <div>
+            <span class="badge badge-ai" style="margin-bottom:20px"><span data-ic="sparkle" data-s="13"></span> חדש · בינה פיננסית</span>
+            <h1 style="font-size:clamp(2.4rem,4.4vw,3.7rem); font-weight:800; letter-spacing:-.03em; line-height:1.05;">
+              ניהול תקציב<br><span class="grad-text">חכם ומדויק</span>
+            </h1>
+            <p style="font-size:1.12rem; color:var(--text-2); max-width:46ch; margin-top:20px;">
+              תיעוד עסקאות מהיר עם בינה מלאכותית מובנית — תחזית תזרים בזמן אמת, קטגוריזציה אוטומטית וניתוח חכם של ההרגלים שלך.
+            </p>
+            <div class="row gap-s" style="margin-top:30px">
+              <button class="btn btn-primary btn-lg">התחל בחינם →</button>
+              <button class="btn btn-ghost btn-lg">כבר יש לי חשבון</button>
+            </div>
+            <div class="row gap" style="margin-top:30px; color:var(--text-3); font-size:.86rem;">
+              <span class="row gap-s"><span data-ic="shield" data-s="16" style="color:var(--income)"></span> מאובטח מקצה לקצה</span>
+              <span class="row gap-s"><span data-ic="user" data-s="16" style="color:var(--primary)"></span> +12,000 משתמשים</span>
+            </div>
+          </div>
+          <!-- hero card -->
+          <div class="glass-hi card" style="padding:26px; border-radius:var(--radius-lg)">
+            <div class="row between">
+              <div><div class="kpi-label">יתרה כוללת</div>
+                <div class="balance num" style="font-size:2.6rem; margin-top:6px">124,500 <span style="font-size:1.4rem">₪</span></div></div>
+              <span class="badge badge-income">▲ 4.2%</span>
+            </div>
+            <svg class="spark" viewBox="0 0 320 90" preserveAspectRatio="none" style="margin:18px 0 14px">
+              <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#38BDF8" stop-opacity=".5"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0 70 C40 64 60 50 90 52 S150 38 180 30 240 20 320 8" fill="none" stroke="#4D86FF" stroke-width="3" stroke-linecap="round"/>
+              <path d="M0 70 C40 64 60 50 90 52 S150 38 180 30 240 20 320 8 L320 90 L0 90 Z" fill="url(#ga)"/>
+            </svg>
+            <div class="bars">
+              <span style="height:46%"></span><span style="height:62%"></span><span style="height:38%"></span>
+              <span style="height:78%"></span><span class="hl" style="height:92%"></span><span style="height:54%"></span><span style="height:70%"></span>
+            </div>
+          </div>
+        </div>
+        <!-- features -->
+        <div style="padding:0 44px 56px">
+          <div class="row between" style="margin-bottom:20px">
+            <h3 style="font-size:1.5rem">למה Predicta?</h3>
+            <span class="dim" style="font-size:.9rem">הכל במקום אחד</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px">
+            <div class="glass feat"><div class="fi" data-ic="forecast" data-s="24"></div><h4>תחזית 6 חודשים</h4><p>ראה את תזרים המזומנים שלך קדימה וקבל החלטות בביטחון.</p></div>
+            <div class="glass feat"><div class="fi" data-ic="ai" data-s="24"></div><h4>ניתוח AI חכם</h4><p>הבינה מנתחת את ההוצאות שלך ומציעה המלצות חיסכון אישיות.</p></div>
+            <div class="glass feat"><div class="fi" data-ic="user" data-s="24"></div><h4>תקציב משותף</h4><p>נהל תקציב משותף עם בן/בת הזוג — בלי לחלוק חשבון בנק.</p></div>
+          </div>
+        </div>
+        <!-- cta -->
+        <div style="padding:0 44px 56px">
+          <div class="glass-hi card" style="border-radius:var(--radius-lg); padding:40px; text-align:center">
+            <h3 style="font-size:1.8rem">מוכן להשתלט על התקציב?</h3>
+            <p class="muted" style="margin-top:8px">הצטרף לאלפי משתמשים שכבר מנהלים את הכסף שלהם בצורה חכמה יותר.</p>
+            <button class="btn btn-primary btn-lg" style="margin-top:22px">הרשמה חינמית →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DESKTOP · DASHBOARD ============ -->
+  <div class="scene-head" style="padding-top:60px"><div class="n">02 — DASHBOARD</div><h2>לוח הבקרה</h2><p>הסקירה הפיננסית של היום, במבט אחד.</p></div>
+  <div class="browser">
+    <div class="browser-bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url"><span data-ic="shield" data-s="14"></span> predicta.app/dashboard</span>
+      <span style="width:54px"></span>
+    </div>
+    <div class="browser-body">
+      <div class="app-bg" style="padding:0">
+        <div class="row between" style="padding:18px 40px; border-bottom:1px solid var(--border)">
+          <span class="row gap-s"><span class="ic-btn" data-ic="settings" data-s="18" style="width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)"></span></span>
+          <span data-logo="1"></span>
+          <span class="row gap-s">
+            <span class="ic-btn" data-ic="user" data-s="18" style="width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)"></span>
+            <span class="ic-btn" data-ic="logout" data-s="18" style="width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)"></span>
+          </span>
+        </div>
+        <div style="padding:30px 40px 44px">
+          <div style="margin-bottom:24px">
+            <h2 style="font-size:1.8rem">צהריים טובים, נועה ☀️</h2>
+            <p class="muted">הנה הסקירה הפיננסית שלך להיום.</p>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px">
+            <!-- total balance -->
+            <div class="glass-hi card" style="padding:24px; border-radius:var(--radius-lg)">
+              <div class="row between">
+                <div class="row gap-s"><span class="fi" data-ic="wallet" data-s="22" style="width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--blue-500),var(--blue-700))"></span>
+                  <div><div class="kpi-label">יתרה כוללת</div><div class="dim" style="font-size:.78rem">מאי 2026</div></div></div>
+                <span class="badge badge-income">▲ 100 ₪</span>
+              </div>
+              <div class="balance num" style="font-size:3rem; margin-top:18px">12,480 <span style="font-size:1.5rem">₪</span></div>
+            </div>
+            <!-- month summary -->
+            <div class="glass card" style="padding:24px">
+              <div class="row between" style="margin-bottom:14px"><h4>חודש מאי</h4><span class="badge badge-blue">סיכום</span></div>
+              <div class="row between" style="padding:9px 0; border-bottom:1px solid var(--border)"><span class="muted">הכנסות</span><span class="amt pos num">+4,200 ₪</span></div>
+              <div class="row between" style="padding:9px 0; border-bottom:1px solid var(--border)"><span class="muted">הוצאות</span><span class="amt neg num">−3,100 ₪</span></div>
+              <div class="row between" style="padding:9px 0"><span style="font-weight:600">נטו</span><span class="amt pos num">+1,100 ₪</span></div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px">
+            <!-- forecast -->
+            <div class="glass card" style="padding:24px">
+              <div class="row between" style="margin-bottom:6px"><span class="badge badge-ai"><span data-ic="forecast" data-s="13"></span> AI FORECAST</span><span class="dim" style="font-size:.78rem">6 חודשים</span></div>
+              <div style="font-size:1.3rem; font-weight:700; margin:6px 0">צפי יתרה: <span class="grad-text">19,400 ₪</span></div>
+              <svg class="spark" viewBox="0 0 380 110" preserveAspectRatio="none" style="margin-top:8px">
+                <defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4D86FF" stop-opacity=".45"/><stop offset="1" stop-color="#4D86FF" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 86 C50 80 80 70 120 64 S210 44 250 40 330 22 380 12" fill="none" stroke="#4D86FF" stroke-width="3"/>
+                <path d="M250 40 S330 22 380 12" fill="none" stroke="#38BDF8" stroke-width="3" stroke-dasharray="5 6"/>
+                <path d="M0 86 C50 80 80 70 120 64 S210 44 250 40 330 22 380 12 L380 110 L0 110 Z" fill="url(#gb)"/>
+                <circle cx="250" cy="40" r="4" fill="#4D86FF"/><circle cx="380" cy="12" r="4" fill="#38BDF8"/>
+              </svg>
+            </div>
+            <!-- spending analysis -->
+            <div class="glass card" style="padding:24px">
+              <div class="row between" style="margin-bottom:16px"><span class="kpi-label">ניתוח הוצאות</span><span class="dim" style="font-size:.78rem">השבוע</span></div>
+              <div class="bars" style="height:96px">
+                <span style="height:40%"></span><span style="height:58%"></span><span style="height:34%"></span>
+                <span class="hl" style="height:88%"></span><span style="height:52%"></span><span style="height:66%"></span><span style="height:44%"></span>
+              </div>
+              <div class="row between dim" style="font-size:.7rem; margin-top:8px"><span>א׳</span><span>ב׳</span><span>ג׳</span><span>ד׳</span><span>ה׳</span><span>ו׳</span><span>ש׳</span></div>
+            </div>
+          </div>
+          <!-- recent txns -->
+          <div class="glass card" style="padding:20px 24px">
+            <div class="row between" style="margin-bottom:8px"><h4>עסקאות אחרונות</h4><a class="grad-text" style="font-size:.86rem; font-weight:600">הכל ‹</a></div>
+            <div class="txn"><span class="ti" data-ic="coffee" data-s="20"></span><div class="tt"><div class="name">קפה ומאפה</div><div class="meta">אוכל · 25/05</div></div><span class="amt neg num">−42 ₪</span></div>
+            <div class="txn"><span class="ti" data-ic="bag" data-s="20"></span><div class="tt"><div class="name">סופרמרקט</div><div class="meta">קניות · 24/05</div></div><span class="amt neg num">−318 ₪</span></div>
+            <div class="txn"><span class="ti" data-ic="arrowDown" data-s="20" style="color:var(--income)"></span><div class="tt"><div class="name">משכורת</div><div class="meta">הכנסה · 01/05</div></div><span class="amt pos num">+9,800 ₪</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MOBILE SCREENS ============ -->
+  <div class="scene-head" style="padding-top:64px"><div class="n">03 — MOBILE</div><h2>חוויית הנייד</h2><p>אותה שפה, מותאמת לכף היד. RTL מלא, ניווט תחתון בזכוכית.</p></div>
+
+  <div class="phones">
+
+    <!-- AUTH -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="screen-scroll" style="padding:8px 22px; justify-content:center">
+          <div style="text-align:center; margin-bottom:22px">
+            <div data-logo-mark="56" style="display:inline-flex; margin-bottom:14px"></div>
+            <h2 style="font-size:1.6rem">יצירת חשבון</h2>
+            <p class="muted" style="font-size:.88rem; margin-top:4px">דקה אחת, וכל הכסף שלך במקום אחד.</p>
+          </div>
+          <div class="field" style="margin-bottom:12px"><label>שם מלא</label>
+            <div class="input-icon"><span data-ic="user" data-s="17"></span><input class="input" placeholder="נועה כהן"></div></div>
+          <div class="field" style="margin-bottom:12px"><label>אימייל</label>
+            <div class="input-icon"><span data-ic="wallet" data-s="17"></span><input class="input" dir="ltr" style="text-align:right" placeholder="you@example.com"></div></div>
+          <div class="field" style="margin-bottom:18px"><label>סיסמה</label>
+            <div class="input-icon"><span data-ic="shield" data-s="17"></span><input class="input" type="password" value="········"></div></div>
+          <button class="btn btn-primary btn-block btn-lg">צור חשבון →</button>
+          <p class="muted" style="text-align:center; font-size:.86rem; margin-top:16px">כבר יש לך חשבון? <a class="grad-text" style="font-weight:600">כניסה</a></p>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>הרשמה</b> · יצירת חשבון</div>
+    </div>
+
+    <!-- DASHBOARD MOBILE -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="app-head"><span class="ic-btn" data-ic="settings" data-s="18"></span><span data-logo-mark="30"></span><span class="ic-btn" data-ic="bell" data-s="18"></span></div>
+        <div class="app-body">
+          <div style="margin-bottom:16px"><h3 style="font-size:1.25rem">צהריים טובים, נועה ☀️</h3><p class="muted" style="font-size:.82rem">הסקירה שלך להיום</p></div>
+          <div class="glass-hi card" style="padding:20px; border-radius:var(--radius-lg); margin-bottom:14px">
+            <div class="row between"><div class="kpi-label">יתרה כוללת</div><span class="badge badge-income">▲ 4.2%</span></div>
+            <div class="balance num" style="font-size:2.2rem; margin-top:8px">12,480 <span style="font-size:1.1rem">₪</span></div>
+            <div class="bars" style="height:50px; margin-top:14px">
+              <span style="height:44%"></span><span style="height:64%"></span><span style="height:40%"></span><span class="hl" style="height:90%"></span><span style="height:56%"></span><span style="height:72%"></span></div>
+          </div>
+          <div class="glass card" style="padding:16px; margin-bottom:14px">
+            <div class="row between" style="margin-bottom:4px"><span class="badge badge-ai"><span data-ic="forecast" data-s="12"></span> תחזית</span><span class="dim" style="font-size:.72rem">6 ח׳</span></div>
+            <div style="font-weight:700; margin-top:4px">צפי: <span class="grad-text">19,400 ₪</span></div>
+          </div>
+          <div class="row between" style="margin-bottom:6px"><h4 style="font-size:1rem">עסקאות אחרונות</h4><a class="grad-text" style="font-size:.8rem; font-weight:600">הכל ‹</a></div>
+          <div class="txn"><span class="ti" data-ic="coffee" data-s="18"></span><div class="tt"><div class="name">קפה ומאפה</div><div class="meta">אוכל · 25/05</div></div><span class="amt neg num">−42 ₪</span></div>
+          <div class="txn"><span class="ti" data-ic="bag" data-s="18"></span><div class="tt"><div class="name">סופרמרקט</div><div class="meta">קניות · 24/05</div></div><span class="amt neg num">−318 ₪</span></div>
+        </div>
+        <div class="bottomnav">
+          <span class="navb active"><span data-ic="home" data-s="20"></span>בית</span>
+          <span class="navb"><span data-ic="search" data-s="20"></span>חיפוש</span>
+          <span class="navb fab"><span data-ic="add" data-s="22"></span></span>
+          <span class="navb"><span data-ic="ai" data-s="20"></span>AI</span>
+          <span class="navb"><span data-ic="user" data-s="20"></span>פרופיל</span>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>לוח בקרה</b> · נייד</div>
+    </div>
+
+    <!-- ADD TRANSACTION -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="app-head"><span class="ic-btn" data-ic="arrowDown" data-s="18" style="transform:rotate(90deg)"></span><span style="font-weight:700">עסקה חדשה</span><span style="width:38px"></span></div>
+        <div class="app-body">
+          <div class="seg" style="margin-bottom:18px">
+            <button class="on exp"><span data-ic="arrowUp" data-s="16"></span> הוצאה</button>
+            <button><span data-ic="arrowDown" data-s="16"></span> הכנסה</button>
+          </div>
+          <div class="glass card" style="padding:22px; text-align:center; margin-bottom:16px">
+            <div class="kpi-label">סכום</div>
+            <div class="num" style="font-size:2.8rem; font-weight:800; margin-top:4px; color:var(--expense)">−320 ₪</div>
+          </div>
+          <div class="field" style="margin-bottom:14px"><label>תיאור</label>
+            <input class="input" value="קניות בסופר"></div>
+          <div style="margin-bottom:14px"><label style="font-size:.82rem; color:var(--text-2); font-weight:500; display:block; margin-bottom:8px">קטגוריה</label>
+            <div class="row gap-s" style="flex-wrap:wrap">
+              <span class="chip chip-active">קניות</span><span class="chip">אוכל</span><span class="chip">דיור</span><span class="chip">תחבורה</span><span class="chip">בילויים</span>
+            </div></div>
+          <button class="btn btn-primary btn-block btn-lg">שמור עסקה ✓</button>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>הוספת עסקה</b> · הוצאה/הכנסה</div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="app-head"><span style="width:38px"></span><span style="font-weight:700">חיפוש עסקאות</span><span style="width:38px"></span></div>
+        <div class="app-body">
+          <div class="input-icon" style="margin-bottom:14px"><span data-ic="search" data-s="18"></span><input class="input" placeholder="חפש לפי שם, קטגוריה…"></div>
+          <div class="seg" style="margin-bottom:12px">
+            <button class="on">הכל</button><button>הוצאות</button><button>הכנסות</button></div>
+          <div class="row between dim" style="font-size:.78rem; margin-bottom:8px"><span>32 תוצאות</span><span>מאי 2026</span></div>
+          <div class="txn"><span class="ti" data-ic="coffee" data-s="18"></span><div class="tt"><div class="name">קפה ומאפה</div><div class="meta">אוכל · 25/05</div></div><span class="amt neg num">−42 ₪</span></div>
+          <div class="txn"><span class="ti" data-ic="bag" data-s="18"></span><div class="tt"><div class="name">סופרמרקט</div><div class="meta">קניות · 24/05</div></div><span class="amt neg num">−318 ₪</span></div>
+          <div class="txn"><span class="ti" data-ic="arrowDown" data-s="18" style="color:var(--income)"></span><div class="tt"><div class="name">משכורת</div><div class="meta">הכנסה · 01/05</div></div><span class="amt pos num">+9,800 ₪</span></div>
+          <div class="txn"><span class="ti" data-ic="forecast" data-s="18"></span><div class="tt"><div class="name">חשמל</div><div class="meta">דיור · 28/04</div></div><span class="amt neg num">−240 ₪</span></div>
+          <div class="txn"><span class="ti" data-ic="coffee" data-s="18"></span><div class="tt"><div class="name">מסעדה</div><div class="meta">בילויים · 22/04</div></div><span class="amt neg num">−186 ₪</span></div>
+        </div>
+        <div class="bottomnav">
+          <span class="navb"><span data-ic="home" data-s="20"></span>בית</span>
+          <span class="navb active"><span data-ic="search" data-s="20"></span>חיפוש</span>
+          <span class="navb fab"><span data-ic="add" data-s="22"></span></span>
+          <span class="navb"><span data-ic="ai" data-s="20"></span>AI</span>
+          <span class="navb"><span data-ic="user" data-s="20"></span>פרופיל</span>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>חיפוש</b> · סינון עסקאות</div>
+    </div>
+
+    <!-- AI CHAT -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="app-head">
+          <span class="row gap-s"><span class="ai-ava" data-ic="sparkle" data-s="16" style="width:30px;height:30px;border-radius:9px"></span><span style="font-weight:700; white-space:nowrap">Predicta AI</span></span>
+          <span class="badge badge-income" style="font-size:.66rem">● מחובר</span>
+        </div>
+        <div class="app-body" style="padding-bottom:150px">
+          <div class="chatrow"><span class="ai-ava" data-ic="sparkle" data-s="16"></span>
+            <div class="bubble ai">היי נועה 👋 שאלת אותי על החיסכון — החודש חסכת <b>12%</b> יותר מהממוצע שלך. רוצה לראות איפה?</div></div>
+          <div class="chatrow me"><div class="bubble me">כן! איפה הוצאתי הכי הרבה?</div></div>
+          <div class="chatrow"><span class="ai-ava" data-ic="sparkle" data-s="16"></span>
+            <div class="bubble ai">הקטגוריה המובילה היא <b>קניות</b> — 1,240 ₪. זה 28% מההוצאות. אם תקצֵה 1,000 ₪, תחסוך ~240 ₪ בחודש 💪</div></div>
+          <div style="margin-top:6px"><div class="dim" style="font-size:.74rem; margin-bottom:8px">שאלות מוצעות:</div>
+            <div class="row gap-s" style="flex-wrap:wrap">
+              <span class="chip">מה התחזית שלי?</span><span class="chip">כמה אוכל החודש?</span></div></div>
+        </div>
+        <div style="position:absolute; bottom:18px; left:16px; right:16px; z-index:30">
+          <div class="chatbar"><input placeholder="שאל אותי כל דבר…"><button class="send-btn" data-ic="send" data-s="18"></button></div>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>Predicta AI</b> · עוזר פיננסי</div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="phone-wrap">
+      <div class="phone"><div class="notch"></div><div class="phone-screen"><div class="app-bg">
+        <div class="statusbar"><span>9:41</span><span class="sb-i" data-statusicons="1"></span></div>
+        <div class="app-head"><span style="width:38px"></span><span style="font-weight:700">פרופיל</span><span class="ic-btn" data-ic="settings" data-s="18"></span></div>
+        <div class="app-body">
+          <div class="glass-hi card" style="padding:20px; border-radius:var(--radius-lg); margin-bottom:16px; display:flex; align-items:center; gap:14px">
+            <span class="avatar-lg">נ</span>
+            <div style="flex:1"><div style="font-weight:700; font-size:1.1rem">נועה כהן</div><div class="dim" style="font-size:.82rem">noa@example.com</div>
+              <span class="badge badge-blue" style="margin-top:6px">חשבון Premium</span></div>
+          </div>
+          <div class="glass card" style="padding:8px; margin-bottom:14px">
+            <div class="txn"><span class="ti" data-ic="user" data-s="18"></span><div class="tt"><div class="name">פרטים אישיים</div></div><span class="dim">‹</span></div>
+            <div class="txn"><span class="ti" data-ic="target" data-s="18"></span><div class="tt"><div class="name">יעדי חיסכון</div></div><span class="dim">‹</span></div>
+            <div class="txn"><span class="ti" data-ic="user" data-s="18"></span><div class="tt"><div class="name">תקציב משותף</div></div><span class="dim">‹</span></div>
+            <div class="txn"><span class="ti" data-ic="bell" data-s="18"></span><div class="tt"><div class="name">התראות</div></div><span class="dim">‹</span></div>
+          </div>
+          <div class="glass card" style="padding:8px">
+            <div class="txn"><span class="ti" data-ic="shield" data-s="18"></span><div class="tt"><div class="name">פרטיות ואבטחה</div></div><span class="dim">‹</span></div>
+            <div class="txn"><span class="ti" data-ic="logout" data-s="18" style="color:var(--expense)"></span><div class="tt"><div class="name" style="color:var(--expense)">התנתקות</div></div></div>
+          </div>
+        </div>
+        <div class="bottomnav">
+          <span class="navb"><span data-ic="home" data-s="20"></span>בית</span>
+          <span class="navb"><span data-ic="search" data-s="20"></span>חיפוש</span>
+          <span class="navb fab"><span data-ic="add" data-s="22"></span></span>
+          <span class="navb"><span data-ic="ai" data-s="20"></span>AI</span>
+          <span class="navb active"><span data-ic="user" data-s="20"></span>פרופיל</span>
+        </div>
+      </div></div></div>
+      <div class="phone-cap"><b>פרופיל</b> · הגדרות חשבון</div>
+    </div>
+
+  </div>
+
+  <div style="text-align:center; padding:70px 0 20px; color:var(--text-3); font-size:.85rem">
+    <span data-logo="1" style="justify-content:center; margin-bottom:12px"></span><br>
+    Predicta · Product Demo · 2026 — נבנה בשפת המותג המלאה.
+  </div>
+
+</div>
+
+<script src="brand-assets.js"></script>
+<script>
+  const PB = window.PredictaBrand;
+  // icons
+  document.querySelectorAll('[data-ic]').forEach(el => {
+    el.innerHTML = PB.icon(el.dataset.ic, +(el.dataset.s||22));
+  });
+  // logos
+  document.querySelectorAll('[data-logo]').forEach(el => { el.outerHTML = PB.logo({size:32, word:true}); });
+  document.querySelectorAll('[data-logo-mark]').forEach(el => { el.innerHTML = PB.logo({size:+el.dataset.logoMark, word:false}); });
+  // status bar icons
+  const sbHTML = PB.icon('chart',13)+PB.icon('wallet',13)+'<span style="display:inline-block;width:22px;height:11px;border:1.5px solid currentColor;border-radius:3px;position:relative"><span style="position:absolute;inset:1.5px;right:auto;width:64%;background:currentColor;border-radius:1px"></span></span>';
+  document.querySelectorAll('[data-statusicons]').forEach(el => el.innerHTML = sbHTML);
+  // theme toggle
+  const tt = document.getElementById('themeToggle');
+  tt.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    tt.querySelectorAll('span[data-m]').forEach(s => s.classList.toggle('on', s.dataset.m === next));
+  });
+</script>
+</body>
+</html>
