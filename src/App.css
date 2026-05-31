@@ -4,7 +4,7 @@
 .app-shell {
   position: relative;
   min-height: 100dvh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Ambient background blobs */
@@ -36,21 +36,22 @@
 .app-main {
   position: relative;
   z-index: 1;
-  padding-top: 72px;
-  padding-bottom: 120px;
+  width: min(100%, 1120px);
+  padding-top: clamp(72px, 8vw, 100px);
+  padding-bottom: clamp(120px, 12vw, 160px);
   padding-left: var(--spacing-margin-page);
   padding-right: var(--spacing-margin-page);
-  max-width: 960px;
+  max-width: 1120px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-stack-lg);
+  gap: clamp(24px, 4vw, 32px);
 }
 
 @media (min-width: 640px) {
   .app-main {
-    padding-top: 100px;
-    padding-bottom: 160px;
+    padding-top: clamp(88px, 9vw, 100px);
+    padding-bottom: clamp(136px, 14vw, 160px);
   }
 }
 
@@ -70,7 +71,7 @@
 }
 
 @media (min-width: 640px) {
-  .bento-grid          { grid-template-columns: repeat(12, 1fr); }
+  .bento-grid          { grid-template-columns: repeat(12, minmax(0, 1fr)); }
   .bento-col-8         { grid-column: span 8; }
   .bento-col-4         { grid-column: span 4; }
   .bento-col-6         { grid-column: span 6; }

@@ -1,90 +1,147 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Button     from '../../components/Button/Button'
+import AuthLayout from '../../components/AuthLayout/AuthLayout'
+import Button from '../../components/Button/Button'
 import InputField from '../../components/InputField/InputField'
-import GlassCard  from '../../components/GlassCard/GlassCard'
-import './AuthPage.css'
+import { signUpUser } from '../../lib/auth'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (password.length < 8) {
+      setError('הסיסמה חייבת להכיל לפחות 8 תווים')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('הסיסמאות אינן תואמות')
+      return
+    }
+
+    setLoading(true)
+
+    const { error: signUpError, session } = await signUpUser({
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+    })
+
+    setLoading(false)
+
+    if (signUpError) {
+      setError(signUpError.message)
+      return
+    }
+
+    if (session) {
+      navigate('/dashboard')
+      return
+    }
+
+    setSuccess('החשבון נוצר! בדוק את תיבת האימייל לאישור ואז התחבר.')
+  }
 
   return (
-    <div className="auth-page organic-bg" dir="rtl">
-      <div className="app-blob app-blob--top"    aria-hidden="true" />
-      <div className="app-blob app-blob--bottom" aria-hidden="true" />
-
-      <button className="auth-back" onClick={() => navigate('/')}>
-        <span className="material-symbols-outlined">arrow_forward</span>
-      </button>
-
-      <div className="auth-content animate-fade-in-up">
-        <div className="auth-brand">
-          <span className="material-symbols-outlined auth-brand__icon">bubble_chart</span>
-          <span className="text-headline-md auth-brand__name">Predicta</span>
+    <AuthLayout
+      mode="register"
+      title="יצירת חשבון"
+      subtitle="הפרטים שלך נשמרים ב-Supabase Auth ובטבלת users"
+    >
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <div className="auth-form__row">
+          <InputField
+            label="שם פרטי"
+            placeholder="נועה"
+            icon="person"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+            autoComplete="given-name"
+          />
+          <InputField
+            label="שם משפחה"
+            placeholder="כהן"
+            icon="person"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+            autoComplete="family-name"
+          />
         </div>
 
-        <h1 className="text-headline-lg auth-title">צור חשבון</h1>
-        <p className="text-body-md auth-sub">הצטרף לניהול תקציב חכם</p>
+        <InputField
+          label="מספר טלפון"
+          placeholder="05X-XXX-XXXX"
+          icon="phone"
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          autoComplete="tel"
+        />
 
-        <GlassCard variant="panel" className="auth-card">
+        <InputField
+          label="כתובת אימייל"
+          placeholder="you@example.com"
+          icon="mail"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+        />
 
-          <div className="auth-name-row">
-            <InputField label="שם פרטי" placeholder="נועה" icon="person" />
-            <InputField label="שם משפחה" placeholder="כהן" icon="person" />
-          </div>
+        <InputField
+          label="סיסמה"
+          placeholder="לפחות 8 תווים"
+          icon="lock"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
+        <p className="auth-form__hint">הסיסמה נשמרת ב-Supabase Auth (מוצפנת)</p>
 
-          <InputField
-            label="מספר טלפון"
-            placeholder="05X-XXX-XXXX"
-            icon="phone"
-            type="tel"
-          />
+        <InputField
+          label="אימות סיסמה"
+          placeholder="הזן שוב את הסיסמה"
+          icon="lock_reset"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          autoComplete="new-password"
+        />
 
-          <InputField
-            label="כתובת אימייל"
-            placeholder="noa@example.com"
-            icon="mail"
-            type="email"
-          />
+        {error && (
+          <p className="auth-alert auth-alert--error" role="alert">{error}</p>
+        )}
 
-          <InputField
-            label="סיסמה"
-            placeholder="לפחות 8 תווים"
-            icon="lock"
-            type="password"
-          />
+        {success && (
+          <p className="auth-alert auth-alert--success" role="status">{success}</p>
+        )}
 
-          <div className="auth-info">
-            <span className="material-symbols-outlined auth-info__icon">info</span>
-            <p className="auth-info__text">
-              לאחר ההרשמה, נשלח קוד אימות (OTP) למספר הטלפון שלך
-            </p>
-          </div>
-
-          <Button variant="primary" full onClick={() => navigate('/dashboard')} icon="arrow_back">
-            צור חשבון
-          </Button>
-
-          <div className="auth-divider">
-            <span className="auth-divider__line" />
-            <span className="text-label-light auth-divider__text">או</span>
-            <span className="auth-divider__line" />
-          </div>
-
-          <Button variant="glass" full icon="google">
-            הרשמה עם Google
-          </Button>
-
-          <div className="auth-links">
-            <span className="text-label-light" style={{ color: 'var(--color-on-surface-variant)' }}>
-              כבר יש לך חשבון?
-            </span>
-            <button className="auth-link text-label-bold" onClick={() => navigate('/login')}>
-              כניסה
-            </button>
-          </div>
-
-        </GlassCard>
-      </div>
-    </div>
+        <Button variant="primary" full type="submit" disabled={loading} icon="person_add">
+          {loading ? 'יוצר חשבון...' : 'צור חשבון'}
+        </Button>
+      </form>
+    </AuthLayout>
   )
 }

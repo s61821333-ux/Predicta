@@ -104,12 +104,12 @@
   --font-weight-label-light:        300;
 
   /* ── Spacing ─────────────────────────────────────────────────────────────── */
-  --spacing-margin-page:            24px;
+  --spacing-margin-page:            clamp(16px, 4vw, 24px);
   --spacing-gutter-bento:           16px;
-  --spacing-padding-card:           24px;
+  --spacing-padding-card:           clamp(16px, 3vw, 24px);
   --spacing-stack-sm:               8px;
   --spacing-stack-md:               16px;
-  --spacing-stack-lg:               32px;
+  --spacing-stack-lg:               clamp(24px, 4vw, 32px);
 
   /* ── Border Radius ───────────────────────────────────────────────────────── */
   --radius-sm:                      0.5rem;   /* 8px  */
@@ -168,12 +168,28 @@ body {
   color: var(--color-on-background);
   background-color: var(--color-background);
   min-height: 100dvh;
+  overflow-x: clip;
 }
 
 #root {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  min-width: 0;
 }
 
 /* ── Typography Utilities ────────────────────────────────────────────────────── */

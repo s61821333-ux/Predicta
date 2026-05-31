@@ -3,12 +3,13 @@
 
 .app-shell {
   direction: rtl;
+  min-width: 0;
 }
 
 /* FAB — floating action button for new transaction */
 .fab {
   position: fixed;
-  bottom: calc(80px + var(--spacing-stack-lg));
+  bottom: calc(88px + env(safe-area-inset-bottom));
   left: var(--spacing-margin-page);
   width: 56px;
   height: 56px;
@@ -24,6 +25,14 @@
   font-family: var(--font-family);
   z-index: 50;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (max-width: 640px) {
+  .fab {
+    width: 52px;
+    height: 52px;
+    bottom: calc(96px + env(safe-area-inset-bottom));
+  }
 }
 
 .fab:active { transform: scale(0.94); }

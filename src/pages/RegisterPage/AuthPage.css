@@ -11,6 +11,14 @@
   overflow: hidden;
 }
 
+@media (max-width: 900px) {
+  .auth-page {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 88px;
+  }
+}
+
 /* ── Back button ────────────────────────── */
 .auth-back {
   position: fixed;
@@ -82,6 +90,62 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-stack-md);
+}
+
+@media (max-width: 640px) {
+  .auth-page {
+    padding-top: 72px;
+  }
+
+  .auth-back {
+    top: 12px;
+    right: 12px;
+  }
+
+  .auth-content {
+    max-width: none;
+  }
+
+  .auth-card {
+    padding: 20px 18px;
+  }
+
+  .auth-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .auth-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .auth-method-toggle {
+    flex-wrap: wrap;
+  }
+
+  .auth-method-btn {
+    flex: 1 1 100%;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  width: 100%;
+}
+
+.auth-error {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  font-size: var(--font-size-label-light);
+  text-align: center;
 }
 
 /* ── Method toggle (Login) ──────────────── */

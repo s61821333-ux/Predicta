@@ -1,8 +1,16 @@
-import { useState } from 'react'
-import AppShell  from '../../layouts/AppShell'
+import { useEffect, useState } from 'react'
+import AppShell from '../../layouts/AppShell'
 import GlassCard from '../../components/GlassCard/GlassCard'
-import Button    from '../../components/Button/Button'
-import Badge     from '../../components/Badge/Badge'
+import Button from '../../components/Button/Button'
+import Badge from '../../components/Badge/Badge'
+import { useUser } from '../../context/UserContext'
+import {
+  fetchCategories,
+  createCategory,
+  deleteCategory,
+  updateUserSettings,
+  getAuthUserId,
+} from '../../lib/db'
 import './SettingsPage.css'
 
 function Toggle({ checked, onChange }) {
@@ -31,90 +39,129 @@ function SettingsRow({ icon, label, desc, children }) {
   )
 }
 
-const DEFAULT_CATS = ['אוכל', 'תחבורה', 'קניות', 'בריאות', 'בילויים', 'דיור', 'תקשורת', 'חינוך']
-
 export default function SettingsPage() {
-  const [notifBudget,   setNotifBudget]   = useState(true)
-  const [notifSummary,  setNotifSummary]  = useState(true)
-  const [notifAI,       setNotifAI]       = useState(false)
-  const [autoCategory,  setAutoCategory]  = useState(true)
-  const [futureForecast,setFutureForecast]= useState(true)
-  const [rtlMode,       setRtlMode]       = useState(true)
-  const [categories,    setCategories]    = useState(DEFAULT_CATS)
-  const [newCat,        setNewCat]        = useState('')
+  const { settings, profile, refresh } = useUser()
+  const [notifBudget, setNotifBudget] = useState(true)
+  const [notifSummary, setNotifSummary] = useState(true)
+  const [notifAI, setNotifAI] = useState(false)
+  const [autoCategory, setAutoCategory] = useState(true)
+  const [futureForecast, setFutureForecast] = useState(true)
+  const [rtlMode, setRtlMode] = useState(true)
+  const [categories, setCategories] = useState([])
+  const [newCat, setNewCat] = useState('')
+  const [saving, setSaving] = useState(false)
 
-  function addCat() {
-    if (newCat.trim() && !categories.includes(newCat.trim())) {
-      setCategories(prev => [...prev, newCat.trim()])
+  useEffect(() => {
+    if (settings) {
+      setNotifBudget(settings.notif_budget)
+      setNotifSummary(settings.notif_summary)
+      setNotifAI(settings.notif_ai)
+      setAutoCategory(settings.auto_category)
+      setFutureForecast(settings.future_forecast)
+      setRtlMode(settings.rtl_mode)
+    }
+  }, [settings])
+
+  useEffect(() => {
+    async function loadCats() {
+      const userId = await getAuthUserId()
+      if (!userId) return
+      const { data } = await fetchCategories(userId)
+      const userCats = data.filter((c) => c.user_id === userId)
+      setCategories(userCats)
+    }
+    if (profile?.id) loadCats()
+  }, [profile?.id])
+
+  async function persistSettings(patch) {
+    if (!profile?.id) return
+    setSaving(true)
+    await updateUserSettings(profile.id, patch)
+    setSaving(false)
+    refresh()
+  }
+
+  function toggleSetting(key, value, setter) {
+    setter(value)
+    persistSettings({ [key]: value })
+  }
+
+  async function addCat() {
+    const name = newCat.trim()
+    if (!name || !profile?.id) return
+    const { data, error } = await createCategory(profile.id, { name, type: 'expense' })
+    if (!error && data) {
+      setCategories((prev) => [...prev, data])
       setNewCat('')
     }
   }
 
-  function removeCat(cat) {
-    setCategories(prev => prev.filter(c => c !== cat))
+  async function removeCat(cat) {
+    const { error } = await deleteCategory(cat.id)
+    if (!error) setCategories((prev) => prev.filter((c) => c.id !== cat.id))
   }
+
+  const currency = settings?.currency_code ?? 'ILS'
 
   return (
     <AppShell>
       <div className="page-header">
         <h1 className="text-headline-lg">הגדרות</h1>
-        <p className="text-body-md page-subtitle">התאם את האפליקציה לצרכים שלך</p>
+        <p className="text-body-md page-subtitle">
+          העדפות נשמרות בטבלת user_settings · {saving ? 'שומר...' : 'מסונכרן'}
+        </p>
       </div>
 
-      {/* ── Notifications ── */}
       <GlassCard className="settings-section">
         <h3 className="text-headline-md settings-section__title">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", color: 'var(--color-primary-container)' }}>notifications</span>
           התראות
         </h3>
-
         <SettingsRow icon="savings" label="חריגה מתקציב" desc="קבל התראה כשאתה חורג מהתקציב החודשי">
-          <Toggle checked={notifBudget} onChange={() => setNotifBudget(v => !v)} />
+          <Toggle checked={notifBudget} onChange={() => toggleSetting('notif_budget', !notifBudget, setNotifBudget)} />
         </SettingsRow>
-
         <SettingsRow icon="summarize" label="סיכום שבועי" desc="קבל סיכום הוצאות בכל יום ראשון">
-          <Toggle checked={notifSummary} onChange={() => setNotifSummary(v => !v)} />
+          <Toggle checked={notifSummary} onChange={() => toggleSetting('notif_summary', !notifSummary, setNotifSummary)} />
         </SettingsRow>
-
         <SettingsRow icon="psychology" label="תובנות AI" desc="קבל המלצות חכמות מהבינה המלאכותית">
-          <Toggle checked={notifAI} onChange={() => setNotifAI(v => !v)} />
+          <Toggle checked={notifAI} onChange={() => toggleSetting('notif_ai', !notifAI, setNotifAI)} />
         </SettingsRow>
       </GlassCard>
 
-      {/* ── AI & Categorization ── */}
       <GlassCard className="settings-section">
         <h3 className="text-headline-md settings-section__title">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", color: 'var(--color-primary-container)' }}>psychology</span>
           בינה מלאכותית
         </h3>
-
-        <SettingsRow icon="category" label="קטגוריזציה אוטומטית" desc="AI מסווג עסקאות חדשות אוטומטית">
-          <Toggle checked={autoCategory} onChange={() => setAutoCategory(v => !v)} />
+        <SettingsRow icon="category" label="קטגוריזציה אוטומטית">
+          <Toggle checked={autoCategory} onChange={() => toggleSetting('auto_category', !autoCategory, setAutoCategory)} />
         </SettingsRow>
-
-        <SettingsRow icon="timeline" label="תחזית עתידית" desc="AI מחשב תחזית תזרים ל-6 חודשים קדימה">
-          <Toggle checked={futureForecast} onChange={() => setFutureForecast(v => !v)} />
+        <SettingsRow icon="timeline" label="תחזית עתידית">
+          <Toggle checked={futureForecast} onChange={() => toggleSetting('future_forecast', !futureForecast, setFutureForecast)} />
         </SettingsRow>
       </GlassCard>
 
-      {/* ── Categories management ── */}
       <GlassCard className="settings-section">
         <h3 className="text-headline-md settings-section__title">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", color: 'var(--color-primary-container)' }}>label</span>
-          ניהול קטגוריות
+          קטגוריות מותאמות אישית
         </h3>
-
         <div className="settings-cats">
-          {categories.map(cat => (
-            <div key={cat} className="settings-cat-chip glass-recessed">
-              <span className="text-label-bold">{cat}</span>
-              <button className="settings-cat__remove" onClick={() => removeCat(cat)}>
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
-              </button>
-            </div>
-          ))}
+          {categories.length === 0 ? (
+            <p className="text-label-light" style={{ color: 'var(--color-on-surface-variant)' }}>
+              אין קטגוריות מותאמות — רק קטגוריות מערכת פעילות
+            </p>
+          ) : (
+            categories.map((cat) => (
+              <div key={cat.id} className="settings-cat-chip glass-recessed">
+                <span className="text-label-bold">{cat.name}</span>
+                <button type="button" className="settings-cat__remove" onClick={() => removeCat(cat)}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                </button>
+              </div>
+            ))
+          )}
         </div>
-
         <div className="settings-add-cat">
           <div className="input-field" style={{ flex: 1 }}>
             <div className="input-field__wrap glass-recessed">
@@ -123,8 +170,8 @@ export default function SettingsPage() {
                 className="input-field__input"
                 placeholder="קטגוריה חדשה..."
                 value={newCat}
-                onChange={e => setNewCat(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addCat()}
+                onChange={(e) => setNewCat(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCat()}
               />
             </div>
           </div>
@@ -132,39 +179,20 @@ export default function SettingsPage() {
         </div>
       </GlassCard>
 
-      {/* ── Display ── */}
       <GlassCard className="settings-section">
         <h3 className="text-headline-md settings-section__title">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", color: 'var(--color-primary-container)' }}>display_settings</span>
           תצוגה
         </h3>
-
-        <SettingsRow icon="translate" label="ממשק עברית RTL" desc="הצג את האפליקציה מימין לשמאל">
-          <Toggle checked={rtlMode} onChange={() => setRtlMode(v => !v)} />
+        <SettingsRow icon="translate" label="ממשק עברית RTL">
+          <Toggle checked={rtlMode} onChange={() => toggleSetting('rtl_mode', !rtlMode, setRtlMode)} />
         </SettingsRow>
-
-        <SettingsRow icon="currency_exchange" label="מטבע" desc="שקל ישראלי (ILS)">
-          <Badge color="primary">₪ ILS</Badge>
+        <SettingsRow icon="currency_exchange" label="מטבע" desc={`מטבע ברירת מחדל: ${currency}`}>
+          <Badge color="primary">₪ {currency}</Badge>
         </SettingsRow>
-
-        <SettingsRow icon="date_range" label="פורמט תאריך" desc="DD/MM/YYYY (ישראלי)">
-          <Badge color="primary">DD/MM/YY</Badge>
+        <SettingsRow icon="date_range" label="פורמט תאריך" desc={settings?.date_format ?? 'DD/MM/YYYY'}>
+          <Badge color="primary">{settings?.date_format ?? 'DD/MM/YYYY'}</Badge>
         </SettingsRow>
-      </GlassCard>
-
-      {/* ── Data ── */}
-      <GlassCard className="settings-section">
-        <h3 className="text-headline-md settings-section__title">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", color: 'var(--color-primary-container)' }}>database</span>
-          נתונים
-        </h3>
-
-        <Button variant="glass" full icon="download">ייצוא כל הנתונים (CSV)</Button>
-        <Button variant="glass" full icon="backup">גיבוי לענן</Button>
-        <Button variant="glass" full icon="delete_forever"
-          style={{ color: 'var(--color-error)', borderColor: 'var(--color-error-container)' }}>
-          מחיקת כל הנתונים
-        </Button>
       </GlassCard>
     </AppShell>
   )

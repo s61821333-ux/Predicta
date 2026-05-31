@@ -66,11 +66,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .admin-users__actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* ── Table ───────────────────────────────── */
@@ -148,6 +150,7 @@
 .admin-row-actions {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .admin-action-btn {
@@ -220,4 +223,23 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-stack-sm);
+}
+
+@media (max-width: 640px) {
+  .admin-users__header,
+  .admin-service-row,
+  .admin-log-row {
+    flex-wrap: wrap;
+  }
+
+  .admin-service__status,
+  .admin-log__event {
+    width: 100%;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }

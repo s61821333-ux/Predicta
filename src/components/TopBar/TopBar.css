@@ -7,8 +7,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 16px var(--spacing-margin-page);
   /* glass-panel applied via className */
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topbar__brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar__name {
+    font-size: 15px;
+  }
+
+  .topbar__actions {
+    margin-inline-start: auto;
+  }
 }
 
 /* ── Brand ─────────────────────────────── */
@@ -58,6 +80,32 @@
   color: var(--color-primary-container);
   background: rgba(255, 255, 255, 0.30);
   font-weight: 800;
+}
+
+/* ── Left actions (logout + avatar) ─────── */
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar__logout {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface-variant);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.topbar__logout:hover {
+  background: rgba(255, 255, 255, 0.30);
+  color: var(--color-primary-container);
 }
 
 /* ── Avatar ─────────────────────────────── */

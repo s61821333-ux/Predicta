@@ -1,66 +1,114 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AppShell    from '../../layouts/AppShell'
+import AppShell from '../../layouts/AppShell'
 import BalanceCard from '../../components/BalanceCard/BalanceCard'
-import SpendingChart  from '../../components/SpendingChart/SpendingChart'
-import ForecastChart  from '../../components/ForecastChart/ForecastChart'
-import GlassCard      from '../../components/GlassCard/GlassCard'
-import Badge          from '../../components/Badge/Badge'
-import Button         from '../../components/Button/Button'
-import ProgressBar    from '../../components/ProgressBar/ProgressBar'
+import SpendingChart from '../../components/SpendingChart/SpendingChart'
+import ForecastChart from '../../components/ForecastChart/ForecastChart'
+import GlassCard from '../../components/GlassCard/GlassCard'
+import Badge from '../../components/Badge/Badge'
+import Button from '../../components/Button/Button'
+import ProgressBar from '../../components/ProgressBar/ProgressBar'
+import { useUser } from '../../context/UserContext'
+import {
+  fetchTotalBalance,
+  fetchMonthlySummary,
+  fetchTransactions,
+  fetchBudgetsWithSpent,
+  getAuthUserId,
+} from '../../lib/db'
+import {
+  formatCurrency,
+  formatTxnAmount,
+  formatDateShort,
+  getGreeting,
+  getCurrentMonthYear,
+  getHebrewMonthName,
+} from '../../utils/format'
 import './DashboardPage.css'
-
-const RECENT = [
-  { icon: 'restaurant',   label: 'מסעדות',      amount: '-₪320',  date: '02/05', cat: 'אוכל',      color: '#ff6b00' },
-  { icon: 'directions_car', label: 'תדלוק',     amount: '-₪180',  date: '01/05', cat: 'תחבורה',    color: '#5e5e5e' },
-  { icon: 'shopping_bag', label: 'זארה',         amount: '-₪450',  date: '30/04', cat: 'קניות',     color: '#5d5f5f' },
-  { icon: 'account_balance', label: 'משכורת',   amount: '+₪12,000', date: '28/04', cat: 'הכנסה', color: '#00a060' },
-  { icon: 'wifi',         label: 'בזק',          amount: '-₪89',   date: '27/04', cat: 'תקשורת',    color: '#5e5e5e' },
-]
-
-const BUDGET_CATS = [
-  { label: 'אוכל',     spent: 1850, budget: 2500 },
-  { label: 'בילויים',  spent: 680,  budget: 800  },
-  { label: 'תחבורה',   spent: 420,  budget: 600  },
-]
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const { profile, loading: userLoading } = useUser()
+  const [loading, setLoading] = useState(true)
+  const [balance, setBalance] = useState(0)
+  const [monthly, setMonthly] = useState({ income: 0, expense: 0, net: 0 })
+  const [recent, setRecent] = useState([])
+  const [budgets, setBudgets] = useState([])
+  const { month, year } = getCurrentMonthYear()
+
+  useEffect(() => {
+    async function load() {
+      const userId = await getAuthUserId()
+      if (!userId) return
+
+      const [
+        { balance: bal },
+        { income, expense, net },
+        { data: txns },
+        { data: budgetRows },
+      ] = await Promise.all([
+        fetchTotalBalance(userId),
+        fetchMonthlySummary(userId, month, year),
+        fetchTransactions(userId, { limit: 5 }),
+        fetchBudgetsWithSpent(userId, month, year),
+      ])
+
+      setBalance(bal)
+      setMonthly({ income, expense, net })
+      setRecent(txns)
+      setBudgets(budgetRows)
+      setLoading(false)
+    }
+
+    if (!userLoading) load()
+  }, [userLoading, month, year])
+
+  const monthLabel = `${getHebrewMonthName(month - 1)} ${year}`
 
   return (
     <AppShell>
-      {/* ── Greeting ── */}
       <div className="page-header">
-        <h1 className="text-headline-lg">בוקר טוב, נועה ☀️</h1>
+        <h1 className="text-headline-lg">
+          {userLoading ? 'טוען...' : `${getGreeting(profile?.first_name)} ☀️`}
+        </h1>
         <p className="text-body-md page-subtitle">הנה הסקירה הפיננסית שלך להיום</p>
       </div>
 
-      {/* ── Bento grid ── */}
       <div className="bento-grid">
         <div className="bento-col-8 animate-fade-in-up">
           <BalanceCard
             currency="₪"
-            amount="124,500"
-            trend="+4.2%"
-            trendLabel="לעומת חודש קודם"
+            amount={loading ? '—' : Math.abs(balance).toLocaleString('he-IL')}
+            trend={monthly.net >= 0 ? `+${formatCurrency(monthly.net, { signed: false })}` : formatCurrency(monthly.net)}
+            trendLabel={`נטו ${monthLabel}`}
           />
         </div>
 
-        {/* Monthly summary */}
         <div className="bento-col-4 animate-fade-in-up delay-100">
           <GlassCard className="dash-summary-card">
-            <span className="text-label-bold dash-summary__title">חודש מאי</span>
+            <span className="text-label-bold dash-summary__title">חודש {getHebrewMonthName(month - 1)}</span>
             <div className="dash-summary__row">
               <span className="text-label-light">הכנסות</span>
-              <span className="text-label-bold" style={{ color: '#00a060' }} dir="ltr">+₪14,200</span>
+              <span className="text-label-bold" style={{ color: '#00a060' }} dir="ltr">
+                {formatCurrency(monthly.income, { signed: true, type: 'income' })}
+              </span>
             </div>
             <div className="dash-summary__row">
               <span className="text-label-light">הוצאות</span>
-              <span className="text-label-bold" style={{ color: 'var(--color-primary-container)' }} dir="ltr">-₪8,340</span>
+              <span className="text-label-bold" style={{ color: 'var(--color-primary-container)' }} dir="ltr">
+                {formatCurrency(monthly.expense, { signed: true, type: 'expense' })}
+              </span>
             </div>
             <div className="dash-summary__divider" />
             <div className="dash-summary__row">
               <span className="text-label-bold">נטו</span>
-              <span className="text-label-bold" dir="ltr" style={{ color: '#00a060' }}>+₪5,860</span>
+              <span
+                className="text-label-bold"
+                dir="ltr"
+                style={{ color: monthly.net >= 0 ? '#00a060' : 'var(--color-error)' }}
+              >
+                {formatCurrency(monthly.net, { signed: true, type: monthly.net >= 0 ? 'income' : 'expense' })}
+              </span>
             </div>
             <Button variant="primary" full onClick={() => navigate('/reports')} style={{ marginTop: 12 }}>
               דוח מלא
@@ -73,32 +121,43 @@ export default function DashboardPage() {
         </div>
 
         <div className="bento-col-6">
-          <ForecastChart value="צפי: ₪ 132K" subtitle="על בסיס המגמה הנוכחית שלך" />
+          <ForecastChart
+            value={loading ? 'טוען...' : `צפי: ${formatCurrency(Math.max(balance + monthly.net, 0))}`}
+            subtitle="על בסיס העסקאות שלך ב-Supabase"
+          />
         </div>
       </div>
 
-      {/* ── Budget progress ── */}
       <GlassCard className="dash-budget-card">
         <div className="dash-budget__header">
           <span className="text-headline-md">מעקב תקציב</span>
-          <Badge color="primary">מאי 2025</Badge>
+          <Badge color="primary">{monthLabel}</Badge>
         </div>
-        {BUDGET_CATS.map(({ label, spent, budget }) => (
-          <div key={label} className="dash-budget__item">
-            <div className="dash-budget__item-header">
-              <span className="text-label-bold">{label}</span>
-              <span className="text-label-light" dir="ltr">₪{spent.toLocaleString()} / ₪{budget.toLocaleString()}</span>
+        {loading ? (
+          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>טוען תקציבים...</p>
+        ) : budgets.length === 0 ? (
+          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>
+            אין תקציבים לחודש זה. הוסף תקציבים בהגדרות או דרך Supabase.
+          </p>
+        ) : (
+          budgets.map(({ id, label, spent, budget, color }) => (
+            <div key={id} className="dash-budget__item">
+              <div className="dash-budget__item-header">
+                <span className="text-label-bold">{label}</span>
+                <span className="text-label-light" dir="ltr">
+                  ₪{spent.toLocaleString()} / ₪{budget.toLocaleString()}
+                </span>
+              </div>
+              <ProgressBar
+                value={budget ? Math.min(Math.round((spent / budget) * 100), 100) : 0}
+                currentLabel={`₪${spent.toLocaleString()}`}
+                budgetLabel={`₪${budget.toLocaleString()}`}
+              />
             </div>
-            <ProgressBar
-              value={Math.round((spent / budget) * 100)}
-              currentLabel={`₪${spent.toLocaleString()}`}
-              budgetLabel={`₪${budget.toLocaleString()}`}
-            />
-          </div>
-        ))}
+          ))
+        )}
       </GlassCard>
 
-      {/* ── Recent transactions ── */}
       <div className="dash-recent">
         <div className="dash-recent__header">
           <h2 className="text-headline-md">עסקאות אחרונות</h2>
@@ -108,23 +167,52 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {RECENT.map(({ icon, label, amount, date, cat, color }, idx) => (
-          <GlassCard key={label + date} className={`dash-txn-card animate-fade-in-up delay-${(idx + 3) * 100}`}>
-            <div className="dash-txn__icon glass-recessed" style={{ color }}>
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
-            </div>
-            <div className="dash-txn__info">
-              <span className="text-label-bold">{label}</span>
-              <span className="text-label-light">{cat} · {date}</span>
-            </div>
-            <span className={`dash-txn__amount text-label-bold`} style={{ color: amount.startsWith('+') ? '#00a060' : 'var(--color-on-surface)' }} dir="ltr">
-              {amount}
-            </span>
+        {loading ? (
+          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>טוען עסקאות...</p>
+        ) : recent.length === 0 ? (
+          <GlassCard className="dash-txn-card">
+            <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)', textAlign: 'center', width: '100%' }}>
+              עדיין אין עסקאות.{' '}
+              <button
+                type="button"
+                className="auth-link text-label-bold"
+                onClick={() => navigate('/new-transaction')}
+              >
+                הוסף עסקה ראשונה
+              </button>
+            </p>
           </GlassCard>
-        ))}
+        ) : (
+          recent.map((txn, idx) => {
+            const color = txn.category?.color_hex ?? '#5e5e5e'
+            const label = txn.description || txn.category?.name || 'עסקה'
+            return (
+              <GlassCard key={txn.id} className={`dash-txn-card animate-fade-in-up delay-${(idx + 3) * 100}`}>
+                <div className="dash-txn__icon glass-recessed" style={{ color }}>
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {txn.category?.icon_name ?? 'receipt'}
+                  </span>
+                </div>
+                <div className="dash-txn__info">
+                  <span className="text-label-bold">{label}</span>
+                  <span className="text-label-light">
+                    {txn.category?.name ?? '—'} · {formatDateShort(txn.date)}
+                    {txn.is_temporary ? ' · זמנית' : ''}
+                  </span>
+                </div>
+                <span
+                  className="dash-txn__amount text-label-bold"
+                  style={{ color: txn.type === 'income' ? '#00a060' : 'var(--color-on-surface)' }}
+                  dir="ltr"
+                >
+                  {formatTxnAmount(txn.amount, txn.type)}
+                </span>
+              </GlassCard>
+            )
+          })
+        )}
       </div>
 
-      {/* ── FAB — new transaction ── */}
       <button className="fab" onClick={() => navigate('/new-transaction')} aria-label="הוסף עסקה">
         <span className="material-symbols-outlined">add</span>
       </button>

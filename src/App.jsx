@@ -16,6 +16,9 @@ import ProfilePage        from './pages/ProfilePage/ProfilePage'
 import SettingsPage       from './pages/SettingsPage/SettingsPage'
 import AdminPage          from './pages/AdminPage/AdminPage'
 
+import ProtectedRoute       from './components/ProtectedRoute/ProtectedRoute'
+import AuthenticatedLayout  from './layouts/AuthenticatedLayout'
+
 import './App.css'
 
 export default function App() {
@@ -29,14 +32,16 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         {/* Authenticated */}
-        <Route path="/dashboard"       element={<DashboardPage />}      />
-        <Route path="/new-transaction" element={<NewTransactionPage />} />
-        <Route path="/reports"         element={<ReportsPage />}        />
-        <Route path="/ai-chat"         element={<AIChatPage />}         />
-        <Route path="/search"          element={<SearchPage />}         />
-        <Route path="/profile"         element={<ProfilePage />}        />
-        <Route path="/settings"        element={<SettingsPage />}       />
-        <Route path="/admin"           element={<AdminPage />}          />
+        <Route element={<ProtectedRoute><AuthenticatedLayout /></ProtectedRoute>}>
+          <Route path="/dashboard"       element={<DashboardPage />}      />
+          <Route path="/new-transaction" element={<NewTransactionPage />} />
+          <Route path="/reports"         element={<ReportsPage />}        />
+          <Route path="/ai-chat"         element={<AIChatPage />}         />
+          <Route path="/search"          element={<SearchPage />}         />
+          <Route path="/profile"         element={<ProfilePage />}        />
+          <Route path="/settings"        element={<SettingsPage />}       />
+          <Route path="/admin"           element={<AdminPage />}          />
+        </Route>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

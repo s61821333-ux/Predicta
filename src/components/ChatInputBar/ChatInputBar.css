@@ -1,6 +1,6 @@
 .chat-input-bar {
   position: fixed;
-  bottom: 96px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   padding: 0 var(--spacing-margin-page);
@@ -15,7 +15,7 @@
 
 .chat-input-bar__inner {
   width: 100%;
-  max-width: 640px;
+  max-width: min(640px, calc(100vw - (2 * var(--spacing-margin-page))));
   display: flex;
   align-items: center;
   padding: 8px 12px 8px 4px;
@@ -61,3 +61,13 @@
 }
 .chat-input-bar__send:hover  { transform: scale(1.05); }
 .chat-input-bar__send:active { transform: scale(0.95); }
+
+@media (max-width: 640px) {
+  .chat-input-bar__inner {
+    padding-left: 6px;
+  }
+
+  .chat-input-bar__input {
+    height: 44px;
+  }
+}

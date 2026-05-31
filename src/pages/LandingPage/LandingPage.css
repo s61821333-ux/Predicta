@@ -16,6 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 16px var(--spacing-margin-page);
 }
 
@@ -37,7 +38,7 @@
 
 /* ── Hero ───────────────────────────────── */
 .landing__hero {
-  padding: 40px var(--spacing-margin-page) 0;
+  padding: clamp(28px, 6vw, 40px) var(--spacing-margin-page) 0;
   display: flex;
   flex-direction: column;
   align-items: center; /* Centered */
@@ -131,7 +132,50 @@
 
 @media (min-width: 640px) {
   .landing__feature-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .landing__header {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .landing__hero {
+    align-items: stretch;
+    text-align: start;
+  }
+
+  .landing__hero-title {
+    font-size: clamp(34px, 10vw, 48px);
+  }
+
+  .landing__hero-sub {
+    max-width: none;
+  }
+
+  .landing__cta-row {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .landing__cta-row .btn {
+    width: 100%;
+  }
+
+  .landing__feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing__preview-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .landing__footer-card {
+    text-align: start;
   }
 }
 

@@ -1,9 +1,10 @@
-import { useState } from 'react'
-import AppShell    from '../../layouts/AppShell'
-import ChatBubble  from '../../components/ChatBubble/ChatBubble'
+import { useEffect, useState } from 'react'
+import AppShell from '../../layouts/AppShell'
+import ChatBubble from '../../components/ChatBubble/ChatBubble'
 import ChatInputBar from '../../components/ChatInputBar/ChatInputBar'
-import GlassCard   from '../../components/GlassCard/GlassCard'
-import Badge       from '../../components/Badge/Badge'
+import GlassCard from '../../components/GlassCard/GlassCard'
+import Badge from '../../components/Badge/Badge'
+import { fetchChatMessages, insertChatMessage, getAuthUserId } from '../../lib/db'
 import './AIChatPage.css'
 
 const SUGGESTED = [
@@ -13,47 +14,60 @@ const SUGGESTED = [
   'מה המגמה שלי ב-3 חודשים אחרונים?',
 ]
 
-const INITIAL_MESSAGES = [
-  {
-    id: 1,
-    isAI: true,
-    title: 'זיהיתי דפוס הוצאה חריג 🔍',
-    text: 'שמתי לב שהוצאות המסעדות שלך עלו ב-42% לעומת החודש הקודם. רוב ההוצאה הייתה בסופי שבוע.',
-    stats: [
-      { label: 'החודש', value: '₪1,840', accent: true  },
-      { label: 'חודש קודם', value: '₪1,300', accent: false },
-    ],
-    actionLabel: 'צפה בפירוט',
-  },
-]
+function mapDbMessage(msg) {
+  return {
+    id: msg.id,
+    isAI: msg.is_ai,
+    title: msg.title,
+    text: msg.text,
+    stats: msg.stats_payload,
+    actionLabel: msg.action_label,
+  }
+}
 
 export default function AIChatPage() {
-  const [messages, setMessages] = useState(INITIAL_MESSAGES)
-  const [pipMode, setPipMode]   = useState(false)
+  const [messages, setMessages] = useState([])
+  const [pipMode, setPipMode] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  function handleSend(text) {
-    const userMsg = { id: Date.now(), isAI: false, text }
-    const aiReply = {
-      id: Date.now() + 1,
-      isAI: true,
-      text: 'מנתח את הנתונים הפיננסיים שלך...',
-      typing: true,
+  useEffect(() => {
+    async function load() {
+      const userId = await getAuthUserId()
+      if (!userId) return
+      const { data } = await fetchChatMessages(userId)
+      setMessages(data.map(mapDbMessage))
+      setLoading(false)
     }
-    setMessages(prev => [...prev, userMsg, aiReply])
+    load()
+  }, [])
+
+  async function handleSend(text) {
+    const userId = await getAuthUserId()
+    if (!userId) return
+
+    const { data: userRow } = await insertChatMessage(userId, { is_ai: false, text })
+    if (userRow) setMessages((prev) => [...prev, mapDbMessage(userRow)])
+
+    const aiText = 'מנתח את הנתונים הפיננסיים שלך מ-Supabase... (חיבור AI מלא בקרוב)'
+    const { data: aiRow } = await insertChatMessage(userId, {
+      is_ai: true,
+      text: aiText,
+      title: 'Predicta AI',
+    })
+    if (aiRow) setMessages((prev) => [...prev, mapDbMessage(aiRow)])
   }
 
   return (
     <AppShell>
-      {/* ── Header ── */}
       <div className="page-header aichat-header">
         <div>
           <h1 className="text-headline-lg">Predicta AI</h1>
-          <p className="text-body-md page-subtitle">שאל כל שאלה על הכספים שלך</p>
+          <p className="text-body-md page-subtitle">היסטוריית צ&apos;אט נשמרת ב-chat_messages</p>
         </div>
-        {/* PIP toggle */}
         <button
+          type="button"
           className={`aichat-pip-btn glass-panel${pipMode ? ' aichat-pip-btn--active' : ''}`}
-          onClick={() => setPipMode(v => !v)}
+          onClick={() => setPipMode((v) => !v)}
           title="מצב PIP"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
@@ -62,50 +76,45 @@ export default function AIChatPage() {
         </button>
       </div>
 
-      {/* ── AI Status bar ── */}
       <GlassCard className="aichat-status">
         <div className="aichat-status__dot" />
         <span className="text-label-bold">Predicta AI</span>
-        <Badge color="primary">מחובר</Badge>
-        <span className="text-label-light aichat-status__model">Gemini 1.5 Pro</span>
+        <Badge color="primary">מחובר ל-DB</Badge>
       </GlassCard>
 
-      {/* ── Suggested questions ── */}
       <div className="aichat-suggested">
         <span className="text-label-light aichat-suggested__label">שאלות מוצעות:</span>
         <div className="aichat-chips hide-scrollbar">
-          {SUGGESTED.map(q => (
-            <button
-              key={q}
-              className="aichat-chip glass-recessed"
-              onClick={() => handleSend(q)}
-            >
+          {SUGGESTED.map((q) => (
+            <button key={q} type="button" className="aichat-chip glass-recessed" onClick={() => handleSend(q)}>
               {q}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── Messages ── */}
       <div className="aichat-messages">
-        {messages.map(msg => (
-          <ChatBubble
-            key={msg.id}
-            isAI={msg.isAI}
-            title={msg.title}
-            stats={msg.stats}
-            actionLabel={msg.actionLabel}
-          >
-            {msg.typing ? (
-              <div className="aichat-typing">
-                <span /><span /><span />
-              </div>
-            ) : msg.text}
-          </ChatBubble>
-        ))}
+        {loading ? (
+          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>טוען הודעות...</p>
+        ) : messages.length === 0 ? (
+          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>
+            אין הודעות עדיין — שלח שאלה כדי להתחיל
+          </p>
+        ) : (
+          messages.map((msg) => (
+            <ChatBubble
+              key={msg.id}
+              isAI={msg.isAI}
+              title={msg.title}
+              stats={msg.stats}
+              actionLabel={msg.actionLabel}
+            >
+              {msg.text}
+            </ChatBubble>
+          ))
+        )}
       </div>
 
-      {/* Chat input — positioned above bottom nav */}
       <ChatInputBar onSend={handleSend} placeholder="שאל על ההוצאות שלך..." />
     </AppShell>
   )
