@@ -1,147 +1,60 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import AuthLayout from '../../components/AuthLayout/AuthLayout'
-import Button from '../../components/Button/Button'
-import InputField from '../../components/InputField/InputField'
+import { useNavigate, Link } from 'react-router-dom'
 import { signUpUser } from '../../lib/auth'
+import { Logo } from '../../components/Logo/Logo'
+import ThemeToggle from '../../components/ThemeToggle/ThemeToggle'
+import Icon from '../../components/Icon/Icon'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [f, setF] = useState({ firstName: '', lastName: '', email: '', password: '' })
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e) {
+  const submit = async (e) => {
     e.preventDefault()
     setError('')
-    setSuccess('')
-
-    if (password.length < 8) {
-      setError('הסיסמה חייבת להכיל לפחות 8 תווים')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('הסיסמאות אינן תואמות')
-      return
-    }
-
     setLoading(true)
-
-    const { error: signUpError, session } = await signUpUser({
-      email,
-      password,
-      firstName,
-      lastName,
-      phone,
-    })
-
+    const { error: err } = await signUpUser(f.email, f.password, { first_name: f.firstName, last_name: f.lastName })
     setLoading(false)
-
-    if (signUpError) {
-      setError(signUpError.message)
-      return
-    }
-
-    if (session) {
-      navigate('/dashboard')
-      return
-    }
-
-    setSuccess('החשבון נוצר! בדוק את תיבת האימייל לאישור ואז התחבר.')
+    if (err) { setError(err.message || 'שגיאה בהרשמה'); return }
+    navigate('/dashboard')
   }
 
+  const field = (key, label, type = 'text', placeholder = '') => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-2)', paddingInlineStart: 4 }}>{label}</label>
+      <input className="field" type={type} value={f[key]} placeholder={placeholder} required
+        onChange={e => setF({ ...f, [key]: e.target.value })} />
+    </div>
+  )
+
   return (
-    <AuthLayout
-      mode="register"
-      title="יצירת חשבון"
-      subtitle="הפרטים שלך נשמרים ב-Supabase Auth ובטבלת users"
-    >
-      <form className="auth-form" onSubmit={handleSubmit} noValidate>
-        <div className="auth-form__row">
-          <InputField
-            label="שם פרטי"
-            placeholder="נועה"
-            icon="person"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            autoComplete="given-name"
-          />
-          <InputField
-            label="שם משפחה"
-            placeholder="כהן"
-            icon="person"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-            autoComplete="family-name"
-          />
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, position: 'relative' }}>
+      <div className="amb"><b/><b/><b/></div>
+      <div style={{ position: 'absolute', top: 16, insetInlineEnd: 16, zIndex: 10 }}><ThemeToggle /></div>
+      <div className="glass glass-strong enter" style={{ width: '100%', maxWidth: 420, borderRadius: 28, padding: 32, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 28 }}>
+          <Logo size={52} />
+          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>הצטרפות ל-Predicta</h1>
+          <p style={{ margin: 0, fontSize: 14, color: 'var(--ink-2)', fontWeight: 600 }}>נהל את הכסף שלך בחכמה</p>
         </div>
-
-        <InputField
-          label="מספר טלפון"
-          placeholder="05X-XXX-XXXX"
-          icon="phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          autoComplete="tel"
-        />
-
-        <InputField
-          label="כתובת אימייל"
-          placeholder="you@example.com"
-          icon="mail"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-        />
-
-        <InputField
-          label="סיסמה"
-          placeholder="לפחות 8 תווים"
-          icon="lock"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={8}
-          autoComplete="new-password"
-        />
-        <p className="auth-form__hint">הסיסמה נשמרת ב-Supabase Auth (מוצפנת)</p>
-
-        <InputField
-          label="אימות סיסמה"
-          placeholder="הזן שוב את הסיסמה"
-          icon="lock_reset"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          autoComplete="new-password"
-        />
-
-        {error && (
-          <p className="auth-alert auth-alert--error" role="alert">{error}</p>
-        )}
-
-        {success && (
-          <p className="auth-alert auth-alert--success" role="status">{success}</p>
-        )}
-
-        <Button variant="primary" full type="submit" disabled={loading} icon="person_add">
-          {loading ? 'יוצר חשבון...' : 'צור חשבון'}
-        </Button>
-      </form>
-    </AuthLayout>
+        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {field('firstName', 'שם פרטי')}
+            {field('lastName', 'שם משפחה')}
+          </div>
+          {field('email', 'אימייל', 'email', 'your@email.com')}
+          {field('password', 'סיסמה', 'password', '••••••••')}
+          {error && <div style={{ color: 'var(--neg)', fontSize: 13.5, fontWeight: 700, textAlign: 'center', padding: '8px 12px', borderRadius: 10, background: 'var(--neg-soft)' }}>{error}</div>}
+          <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: '100%', height: 52, marginTop: 4, fontSize: 16, opacity: loading ? 0.7 : 1 }}>
+            {loading ? 'נרשם…' : <><Icon name="check" size={18} sw={2.4} /> הרשמה</>}
+          </button>
+        </form>
+        <div style={{ marginTop: 20, textAlign: 'center', fontSize: 14, color: 'var(--ink-2)' }}>
+          כבר יש לך חשבון? <Link to="/login" style={{ color: 'var(--blue)', fontWeight: 700, textDecoration: 'none' }}>כניסה</Link>
+        </div>
+      </div>
+    </div>
   )
 }

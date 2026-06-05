@@ -33,7 +33,7 @@ export default function SpendingChart({ data = DEFAULT_DATA }) {
         {data.map(({ day, pct, active }) => (
           <div key={day} className="spending-chart__col">
             <div
-              className={`spending-chart__bar glass-panel${active ? ' spending-chart__bar--active' : ''}`}
+              className={`spending-chart__bar${active ? ' spending-chart__bar--active' : ''}`}
               style={{ height: `${pct}%` }}
             />
             <span className={`spending-chart__day text-label-light${active ? ' spending-chart__day--active' : ''}`}>

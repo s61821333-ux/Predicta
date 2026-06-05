@@ -1,188 +1,119 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AppShell from '../../layouts/AppShell'
-import GlassCard from '../../components/GlassCard/GlassCard'
-import InputField from '../../components/InputField/InputField'
-import Button from '../../components/Button/Button'
-import Badge from '../../components/Badge/Badge'
-import { fetchCategories, createTransaction, getAuthUserId } from '../../lib/db'
-import './NewTransactionPage.css'
+import { useUser } from '../../context/UserContext'
+import { useAppState } from '../../context/AppStateContext'
+import { fetchCategories, createTransaction } from '../../lib/db'
+import CatChip from '../../components/CatChip/CatChip'
+import Icon from '../../components/Icon/Icon'
 
 export default function NewTransactionPage() {
+  const { profile } = useUser()
+  const { showToast } = useAppState()
   const navigate = useNavigate()
   const [type, setType] = useState('expense')
   const [amount, setAmount] = useState('')
-  const [description, setDescription] = useState('')
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
-  const [isTemporary, setIsTemporary] = useState(false)
-  const [selectedCatId, setSelectedCatId] = useState('')
+  const [desc, setDesc] = useState('')
+  const [catId, setCatId] = useState(null)
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [future, setFuture] = useState(false)
+  const [err, setErr] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   useEffect(() => {
-    async function load() {
-      const userId = await getAuthUserId()
-      if (!userId) return
-      const { data } = await fetchCategories(userId)
-      const filtered = data.filter(
-        (c) => c.type === type || c.type === 'both',
-      )
-      setCategories(filtered)
-      setSelectedCatId('')
+    if (!profile?.id) return
+    fetchCategories(profile.id).then(({ data }) => setCategories(data || []))
+  }, [profile?.id])
+
+  const cats = categories.filter(c => c.type === type || c.type === 'both')
+  const selectedCat = cats.find(c => c.id === catId)
+
+  const save = async () => {
+    const amt = parseFloat(amount)
+    if (!amt || amt <= 0) { setErr('amount'); return }
+    if (!catId) { setErr('cat'); return }
+    setSaving(true)
+    try {
+      await createTransaction(profile.id, {
+        amount: amt, type,
+        category_id: catId,
+        description: desc.trim(),
+        date,
+        status: future ? 'future' : 'completed',
+        currency: 'ILS',
+      })
+      showToast('העסקה נשמרה')
+      navigate('/dashboard')
+    } finally {
+      setSaving(false)
     }
-    load()
-  }, [type])
-
-  async function handleSave(status = 'completed') {
-    setError('')
-    const userId = await getAuthUserId()
-    if (!userId) return
-
-    const parsedAmount = parseFloat(amount)
-    if (!parsedAmount || parsedAmount <= 0) {
-      setError('הזן סכום תקין')
-      return
-    }
-    if (!selectedCatId) {
-      setError('בחר קטגוריה')
-      return
-    }
-
-    setLoading(true)
-    const { error: saveError } = await createTransaction(userId, {
-      amount: parsedAmount,
-      type,
-      description: description.trim() || null,
-      date: new Date(date).toISOString(),
-      category_id: selectedCatId,
-      is_temporary: type === 'expense' ? isTemporary : false,
-      status,
-      currency: 'ILS',
-    })
-    setLoading(false)
-
-    if (saveError) {
-      setError(saveError.message)
-      return
-    }
-
-    navigate('/dashboard')
   }
 
   return (
-    <AppShell>
-      <div className="page-header">
-        <h1 className="text-headline-lg">עסקה חדשה</h1>
-        <p className="text-body-md page-subtitle">נשמר בטבלת transactions ב-Supabase</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingBottom: 100 }}>
+      <h1 style={{ margin: '2px 4px', fontSize: 26, fontWeight: 800 }}>עסקה חדשה</h1>
+
+      <div className="seg">
+        <button className={type === 'expense' ? 'on exp' : ''} onClick={() => { setType('expense'); setCatId(null) }}>הוצאה</button>
+        <button className={type === 'income'  ? 'on inc' : ''} onClick={() => { setType('income');  setCatId(null) }}>הכנסה</button>
       </div>
 
-      <div className="txn-type-toggle glass-recessed">
-        <button
-          type="button"
-          className={`txn-type-btn${type === 'expense' ? ' txn-type-btn--active txn-type-btn--expense' : ''}`}
-          onClick={() => setType('expense')}
-        >
-          <span className="material-symbols-outlined">arrow_downward</span>
-          הוצאה
-        </button>
-        <button
-          type="button"
-          className={`txn-type-btn${type === 'income' ? ' txn-type-btn--active txn-type-btn--income' : ''}`}
-          onClick={() => setType('income')}
-        >
-          <span className="material-symbols-outlined">arrow_upward</span>
-          הכנסה
-        </button>
-      </div>
-
-      <GlassCard className="txn-form-card">
-        <div className="txn-amount-wrap glass-recessed">
-          <span className="text-label-bold txn-amount__currency">₪</span>
+      <div className="glass" style={{ borderRadius: 24, padding: '22px 20px', textAlign: 'center', border: err === 'amount' ? '1.5px solid var(--neg)' : undefined }}>
+        <div style={{ fontSize: 13.5, color: 'var(--ink-2)', fontWeight: 600, marginBottom: 4 }}>סכום</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <span style={{ fontSize: 34, fontWeight: 800, color: amount ? (type === 'income' ? 'var(--pos)' : 'var(--ink)') : 'var(--ink-3)' }}>₪</span>
           <input
-            className="txn-amount__input text-display-xl"
-            type="number"
-            placeholder="0"
-            dir="ltr"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
+            className="tnum" inputMode="decimal" value={amount} placeholder="0"
+            onChange={e => { setAmount(e.target.value.replace(/[^0-9.]/g, '')); setErr(null) }}
+            style={{ background: 'none', border: 'none', outline: 'none', textAlign: 'center', width: 'min(60%, 220px)', fontSize: 52, fontWeight: 800, letterSpacing: '-0.02em', color: amount ? (type === 'income' ? 'var(--pos)' : 'var(--ink)') : 'var(--ink-3)' }}
           />
         </div>
+        {err === 'amount' && <div style={{ color: 'var(--neg)', fontSize: 13, fontWeight: 700, marginTop: 6 }}>נא להזין סכום גדול מ-0</div>}
+      </div>
 
-        <InputField
-          label="תיאור"
-          placeholder="תיאור הוצאה/הכנסה"
-          icon="notes"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+      <input className="field" placeholder="מה קנית? (לא חובה)" value={desc} onChange={e => setDesc(e.target.value)} />
 
-        <InputField
-          label="תאריך"
-          icon="calendar_today"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-
-        <div className="txn-cat-section">
-          <label className="input-field__label text-label-light">קטגוריה</label>
-          <div className="txn-cat-chips">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                className={`txn-cat-chip${selectedCatId === cat.id ? ' txn-cat-chip--active' : ''}`}
-                onClick={() => setSelectedCatId(cat.id)}
-              >
-                {cat.name}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 4px 10px' }}>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>קטגוריה</span>
+          {err === 'cat' && <span style={{ color: 'var(--neg)', fontSize: 12.5, fontWeight: 700 }}>בחר/י קטגוריה</span>}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10 }}>
+          {cats.map(c => {
+            const on = catId === c.id
+            return (
+              <button key={c.id} className="tap" onClick={() => { setCatId(c.id); setErr(null) }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, padding: '12px 6px', borderRadius: 18, background: on ? `${c.color_hex}26` : 'var(--glass-2)', border: `1.5px solid ${on ? c.color_hex : 'var(--hairline)'}`, transition: 'all 0.18s var(--ease)' }}>
+                <CatChip color={c.color_hex} name={c.name} iconName={c.icon_name} size={40} />
+                <span style={{ fontSize: 12.5, fontWeight: on ? 700 : 600, color: on ? 'var(--ink)' : 'var(--ink-2)' }}>{c.name}</span>
               </button>
-            ))}
-          </div>
+            )
+          })}
         </div>
+      </div>
 
-        {type === 'expense' && (
-          <div className="txn-temp-row glass-recessed">
-            <div className="txn-temp__info">
-              <span className="material-symbols-outlined txn-temp__icon">hourglass_top</span>
-              <div>
-                <span className="text-label-bold">הוצאה זמנית</span>
-                <p className="text-label-light txn-temp__sub">לא תיספר בחישובי תקציב סופיים</p>
-              </div>
-            </div>
-            <div
-              className={`txn-toggle${isTemporary ? ' txn-toggle--active' : ''}`}
-              onClick={() => setIsTemporary((v) => !v)}
-              role="switch"
-              aria-checked={isTemporary}
-            >
-              <div className="txn-toggle__knob" />
-            </div>
-          </div>
-        )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <label className="glass" style={{ borderRadius: 18, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 12.5, color: 'var(--ink-2)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Icon name="calendar" size={15}/> תאריך
+          </span>
+          <input type="date" value={date} onChange={e => setDate(e.target.value)}
+            style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--ink)', fontSize: 15, fontWeight: 700, fontFamily: 'inherit' }} />
+        </label>
+        <button className="glass tap" onClick={() => setFuture(f => !f)}
+          style={{ borderRadius: 18, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'start' }}>
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 12.5, color: 'var(--ink-2)', fontWeight: 600 }}>סטטוס</span>
+            <span style={{ fontSize: 15, fontWeight: 700 }}>{future ? 'עתידי' : 'הושלם'}</span>
+          </span>
+          <span className={'sw' + (future ? ' on' : '')}><i /></span>
+        </button>
+      </div>
 
-        {error && <p className="auth-alert auth-alert--error" role="alert">{error}</p>}
-
-        <Button variant="primary" full onClick={() => handleSave('completed')} disabled={loading} icon="check">
-          {loading ? 'שומר...' : 'שמור עסקה'}
-        </Button>
-      </GlassCard>
-
-      <GlassCard className="txn-future-card">
-        <div className="txn-future__header">
-          <span className="material-symbols-outlined" style={{ color: 'var(--color-primary-container)', fontVariationSettings: "'FILL' 1" }}>upcoming</span>
-          <div>
-            <span className="text-label-bold">הוצאה עתידית</span>
-            <p className="text-label-light">נשמר עם status = future</p>
-          </div>
-          <Badge color="primary">תחזית</Badge>
-        </div>
-        <Button variant="glass" full icon="schedule" onClick={() => handleSave('future')} disabled={loading}>
-          הוסף לתחזית
-        </Button>
-      </GlassCard>
-    </AppShell>
+      <button className="btn btn-primary tap" onClick={save} disabled={saving}
+        style={{ height: 56, width: '100%', fontSize: 17, opacity: saving ? 0.7 : 1 }}>
+        {saving ? 'שומר…' : <><Icon name="check" size={20} sw={2.4}/> שמור עסקה</>}
+      </button>
+    </div>
   )
 }

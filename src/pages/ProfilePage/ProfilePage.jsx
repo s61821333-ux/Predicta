@@ -1,223 +1,95 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AppShell from '../../layouts/AppShell'
-import GlassCard from '../../components/GlassCard/GlassCard'
-import InputField from '../../components/InputField/InputField'
-import Button from '../../components/Button/Button'
-import Badge from '../../components/Badge/Badge'
 import { useUser } from '../../context/UserContext'
+import { useAppState } from '../../context/AppStateContext'
 import { updateUserProfile } from '../../lib/db'
-import { uploadAvatar } from '../../lib/storage'
 import { supabase } from '../../lib/supabase'
-import './ProfilePage.css'
+import { Confirm } from '../../components/Modal/Modal'
+import Avatar from '../../components/Avatar/Avatar'
+import SectionHead from '../../components/SectionHead/SectionHead'
+import Icon from '../../components/Icon/Icon'
 
 export default function ProfilePage() {
+  const { profile, refresh } = useUser()
+  const { showToast } = useAppState()
   const navigate = useNavigate()
-  const fileInputRef = useRef(null)
-  const { profile, displayName, initials, planLabel, refresh, loading } = useUser()
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [avatarUrl, setAvatarUrl] = useState(null)
+  const [f, setF] = useState({ first: profile?.first_name || '', last: profile?.last_name || '', phone: profile?.phone || '' })
+  const [signOutConfirm, setSignOutConfirm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const [message, setMessage] = useState('')
 
-  useEffect(() => {
-    if (profile) {
-      setFirstName(profile.first_name ?? '')
-      setLastName(profile.last_name ?? '')
-      setPhone(profile.phone ?? '')
-      setEmail(profile.email ?? '')
-      setAvatarUrl(profile.avatar_url ?? null)
-    }
-  }, [profile])
+  const dirty = f.first !== (profile?.first_name || '') || f.last !== (profile?.last_name || '') || f.phone !== (profile?.phone || '')
 
-  function openAvatarPicker() {
-    if (!uploadingAvatar) fileInputRef.current?.click()
-  }
-
-  async function handleAvatarChange(e) {
-    const file = e.target.files?.[0]
-    e.target.value = ''
-    if (!file || !profile?.id) return
-
-    setMessage('')
-    setUploadingAvatar(true)
-
-    const { publicUrl, error: uploadError } = await uploadAvatar(profile.id, file)
-
-    if (uploadError) {
-      setUploadingAvatar(false)
-      setMessage(uploadError.message)
-      return
-    }
-
-    const { error: profileError } = await updateUserProfile(profile.id, {
-      avatar_url: publicUrl,
-    })
-
-    setUploadingAvatar(false)
-
-    if (profileError) {
-      setMessage(profileError.message || 'שמירת התמונה בפרופיל נכשלה')
-      return
-    }
-
-    setAvatarUrl(`${publicUrl}?t=${Date.now()}`)
-    setMessage('תמונת הפרופיל עודכנה בהצלחה')
-    refresh()
-  }
-
-  async function handleSave() {
-    if (!profile?.id) return
+  const save = async () => {
     setSaving(true)
-    setMessage('')
-
-    const { error } = await updateUserProfile(profile.id, {
-      first_name: firstName.trim(),
-      last_name: lastName.trim(),
-      phone: phone.trim() || null,
-    })
-
+    await updateUserProfile(profile.id, { first_name: f.first, last_name: f.last, phone: f.phone })
+    await refresh()
+    showToast('השינויים נשמרו')
     setSaving(false)
-    if (error) {
-      setMessage(error.message)
-      return
-    }
-    setMessage('הפרטים נשמרו בהצלחה')
-    refresh()
   }
 
-  async function handleLogout() {
+  const signOut = async () => {
     await supabase.auth.signOut()
-    navigate('/')
+    navigate('/login')
   }
 
-  const showImage = Boolean(avatarUrl) && !uploadingAvatar
+  const Field = ({ label, value, onChange, readOnly }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-2)', paddingInlineStart: 4 }}>{label}</label>
+      {readOnly ? (
+        <div className="field" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink-2)', opacity: 0.85 }}>
+          {value}<span style={{ marginInlineStart: 'auto', color: 'var(--ink-3)' }}><Icon name="lock" size={16}/></span>
+        </div>
+      ) : (
+        <input className="field" value={value} onChange={e => onChange(e.target.value)} />
+      )}
+    </div>
+  )
 
   return (
-    <AppShell>
-      <div className="page-header">
-        <h1 className="text-headline-lg">פרופיל</h1>
-        <p className="text-body-md page-subtitle">פרטים אישיים מהמסד נתונים</p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingBottom: 90 }}>
+      <h1 style={{ margin: '2px 4px', fontSize: 26, fontWeight: 800 }}>הפרופיל שלי</h1>
 
-      <GlassCard className="profile-hero-card" variant="heavy">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          className="profile-avatar__input"
-          aria-hidden="true"
-          tabIndex={-1}
-          onChange={handleAvatarChange}
-        />
-
-        <div className={`profile-avatar${uploadingAvatar ? ' profile-avatar--loading' : ''}`}>
-          {showImage ? (
-            <img
-              src={avatarUrl}
-              alt={displayName}
-              className="profile-avatar__img"
-            />
-          ) : (
-            <span className="text-display-xl profile-avatar__initials">
-              {uploadingAvatar ? '' : loading ? '…' : initials}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+        <div style={{ position: 'relative' }}>
+          <Avatar size={104} firstName={profile?.first_name} lastName={profile?.last_name} avatarUrl={profile?.avatar_url} />
+          <button className="tap" aria-label="שנה תמונה"
+            style={{ position: 'absolute', bottom: -2, insetInlineStart: -2, width: 36, height: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#fff', background: 'linear-gradient(180deg, var(--blue-300), var(--blue))', border: '3px solid var(--bg)', boxShadow: '0 4px 12px var(--blue-glow)' }}>
+            <Icon name="camera" size={18} />
+          </button>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontWeight: 800, fontSize: 20 }}>{profile?.first_name} {profile?.last_name}</div>
+          {profile?.plan_type === 'premium' && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 5, padding: '4px 12px', borderRadius: 999, fontSize: 13, fontWeight: 700, color: '#fff', background: 'linear-gradient(180deg, #FFD479, #F5A623)', boxShadow: '0 4px 12px rgba(245,166,35,0.3)' }}>
+              <Icon name="star" size={14} /> פרימיום
             </span>
           )}
-          {uploadingAvatar && (
-            <div className="profile-avatar__loader" aria-label="מעלה תמונה">
-              <span className="profile-avatar__spinner" />
-            </div>
-          )}
         </div>
+      </div>
 
-        <div className="profile-hero__info">
-          <h2 className="text-headline-md">{loading ? 'טוען...' : displayName}</h2>
-          <p className="text-label-light" style={{ color: 'var(--color-on-surface-variant)' }}>
-            {email || '—'}
-          </p>
-          <Badge color="primary">{planLabel}</Badge>
+      <div className="glass" style={{ borderRadius: 24, padding: 18, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <SectionHead title="פרטים אישיים" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Field label="שם פרטי"    value={f.first} onChange={v => setF({ ...f, first: v })} />
+          <Field label="שם משפחה"   value={f.last}  onChange={v => setF({ ...f, last: v })} />
         </div>
+        <Field label="טלפון" value={f.phone} onChange={v => setF({ ...f, phone: v })} />
+        <Field label="אימייל" value={profile?.email || ''} readOnly />
+      </div>
 
-        <button
-          type="button"
-          className="profile-avatar__edit glass-recessed"
-          onClick={openAvatarPicker}
-          disabled={uploadingAvatar || loading}
-          aria-label="העלאת תמונת פרופיל"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-            {uploadingAvatar ? 'hourglass_top' : 'photo_camera'}
-          </span>
-        </button>
-      </GlassCard>
+      <button className="btn btn-primary" disabled={!dirty || saving} onClick={save}
+        style={{ height: 54, width: '100%', opacity: dirty && !saving ? 1 : 0.45, pointerEvents: dirty && !saving ? 'auto' : 'none' }}>
+        {saving ? 'שומר…' : 'שמור שינויים'}
+      </button>
 
-      <GlassCard className="profile-section-card">
-        <h3 className="text-headline-md profile-section__title">פרטים אישיים</h3>
+      <button className="btn btn-ghost" onClick={() => setSignOutConfirm(true)}
+        style={{ height: 48, width: '100%', color: 'var(--neg)' }}>
+        <Icon name="logout" size={18} /> התנתקות
+      </button>
 
-        <div className="profile-name-row">
-          <InputField
-            label="שם פרטי"
-            icon="person"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <InputField
-            label="שם משפחה"
-            icon="person"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-
-        <InputField
-          label="מספר טלפון"
-          icon="phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <InputField label="אימייל" icon="mail" type="email" value={email} disabled />
-
-        {message && (
-          <p
-            className={`auth-alert ${
-              message.includes('נכשל') ||
-              message.includes('גדול') ||
-              message.includes('לא נתמך') ||
-              message.includes('error')
-                ? 'auth-alert--error'
-                : 'auth-alert--success'
-            }`}
-            role="alert"
-          >
-            {message}
-          </p>
-        )}
-
-        <Button variant="primary" full icon="save" onClick={handleSave} disabled={saving || uploadingAvatar}>
-          {saving ? 'שומר...' : 'שמור שינויים'}
-        </Button>
-      </GlassCard>
-
-      <GlassCard className="profile-section-card">
-        <div className="profile-partner__header">
-          <h3 className="text-headline-md profile-section__title">תקציב משותף</h3>
-          <Badge color="primary">פרימיום</Badge>
-        </div>
-        <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>
-          {profile?.partner_id
-            ? 'מחובר לשותף/ה לתקציב משותף.'
-            : 'עדיין לא הוספת שותף/ה לתקציב.'}
-        </p>
-      </GlassCard>
-
-      <Button variant="glass" full icon="logout" onClick={handleLogout}>
-        התנתק
-      </Button>
-    </AppShell>
+      <Confirm open={signOutConfirm} title="התנתקות" danger confirmLabel="התנתק"
+        body="האם אתה בטוח שברצונך להתנתק?"
+        onConfirm={signOut} onClose={() => setSignOutConfirm(false)} />
+    </div>
   )
 }

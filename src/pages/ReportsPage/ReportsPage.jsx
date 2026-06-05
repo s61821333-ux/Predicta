@@ -1,190 +1,114 @@
-import { useEffect, useMemo, useState } from 'react'
-import AppShell from '../../layouts/AppShell'
-import GlassCard from '../../components/GlassCard/GlassCard'
-import Badge from '../../components/Badge/Badge'
-import StatWidget from '../../components/StatWidget/StatWidget'
-import ProgressBar from '../../components/ProgressBar/ProgressBar'
-import Button from '../../components/Button/Button'
-import {
-  fetchMonthlySummary,
-  fetchCategoryBreakdown,
-  fetchCashflowByMonth,
-  getAuthUserId,
-} from '../../lib/db'
-import { formatCurrency, HEBREW_MONTHS } from '../../utils/format'
-import './ReportsPage.css'
+import { useEffect, useState } from 'react'
+import { useUser } from '../../context/UserContext'
+import { fetchMonthlySummary, fetchCategoryBreakdown, fetchCashflowByMonth } from '../../lib/db'
+import SectionHead from '../../components/SectionHead/SectionHead'
+import CatChip from '../../components/CatChip/CatChip'
+import { CashflowChart } from '../../components/Charts/Charts'
+import Icon from '../../components/Icon/Icon'
+
+const nf = new Intl.NumberFormat('en-US')
+const fmt = n => '₪' + nf.format(Math.round(Math.abs(n)))
+const HE_MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']
 
 export default function ReportsPage() {
-  const monthOptions = useMemo(() => {
-    const now = new Date()
-    const opts = []
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-      opts.push({
-        key: `${d.getFullYear()}-${d.getMonth()}`,
-        month: d.getMonth() + 1,
-        year: d.getFullYear(),
-        label: HEBREW_MONTHS[d.getMonth()],
-      })
-    }
-    return opts
-  }, [])
-
-  const [selectedKey, setSelectedKey] = useState(() => monthOptions[monthOptions.length - 1]?.key)
-  const [filterType, setFilterType] = useState('all')
-  const [summary, setSummary] = useState({ income: 0, expense: 0, net: 0 })
+  const { profile } = useUser()
+  const [wide, setWide] = useState(window.innerWidth >= 900)
+  const now = new Date()
+  const [month, setMonth] = useState(now.getMonth() + 1)
+  const [year]  = useState(now.getFullYear())
+  const [summary, setSummary]     = useState({ income: 0, expense: 0, net: 0 })
   const [breakdown, setBreakdown] = useState([])
-  const [cashflow, setCashflow] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const selected = monthOptions.find((m) => m.key === selectedKey) ?? monthOptions[monthOptions.length - 1]
+  const [cashflow, setCashflow]   = useState([])
 
   useEffect(() => {
-    async function load() {
-      const userId = await getAuthUserId()
-      if (!userId || !selected) return
+    const on = () => setWide(window.innerWidth >= 900)
+    window.addEventListener('resize', on)
+    return () => window.removeEventListener('resize', on)
+  }, [])
 
-      const [
-        { income, expense, net },
-        { data: catData },
-        { data: flowData },
-      ] = await Promise.all([
-        fetchMonthlySummary(userId, selected.month, selected.year),
-        fetchCategoryBreakdown(userId, selected.month, selected.year),
-        fetchCashflowByMonth(userId, 6),
-      ])
+  useEffect(() => {
+    if (!profile?.id) return
+    fetchMonthlySummary(profile.id, month, year).then(s => setSummary(s))
+    fetchCategoryBreakdown(profile.id, month, year).then(({ data }) => setBreakdown(data || []))
+  }, [profile?.id, month, year])
 
-      setSummary({ income, expense, net })
-      setBreakdown(catData)
-      setCashflow(flowData)
-      setLoading(false)
-    }
+  useEffect(() => {
+    if (!profile?.id) return
+    fetchCashflowByMonth(profile.id, 6).then(({ data }) => setCashflow(data || []))
+  }, [profile?.id])
 
-    setLoading(true)
-    load()
-  }, [selectedKey, selected])
+  const canBack = month > 1
+  const canFwd  = month < now.getMonth() + 1 && year === now.getFullYear()
 
-  const maxVal = Math.max(
-    1,
-    ...cashflow.map((b) => Math.max(b.income, b.expense)),
+  const selector = (
+    <div className="glass" style={{ borderRadius: 20, padding: '8px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <button className="tap" disabled={!canBack} onClick={() => setMonth(m => m - 1)}
+        style={{ width: 40, height: 40, borderRadius: 12, display: 'grid', placeItems: 'center', color: canBack ? 'var(--ink)' : 'var(--ink-3)', background: 'var(--glass-2)', opacity: canBack ? 1 : 0.4 }}>
+        <Icon name="chevron" size={20} sw={2.3} />
+      </button>
+      <div style={{ fontWeight: 800, fontSize: 17 }}>{HE_MONTHS[month - 1]} {year}</div>
+      <button className="tap" disabled={!canFwd} onClick={() => setMonth(m => m + 1)}
+        style={{ width: 40, height: 40, borderRadius: 12, display: 'grid', placeItems: 'center', color: canFwd ? 'var(--ink)' : 'var(--ink-3)', background: 'var(--glass-2)', opacity: canFwd ? 1 : 0.4 }}>
+        <Icon name="chevronL" size={20} sw={2.3} />
+      </button>
+    </div>
   )
 
-  return (
-    <AppShell>
-      <div className="page-header">
-        <h1 className="text-headline-lg">דוחות</h1>
-        <p className="text-body-md page-subtitle">נתונים מחושבים מעסקאות Supabase</p>
-      </div>
-
-      <div className="reports-months hide-scrollbar">
-        {monthOptions.map((m) => (
-          <button
-            key={m.key}
-            type="button"
-            className={`reports-month-btn${selectedKey === m.key ? ' reports-month-btn--active' : ''}`}
-            onClick={() => setSelectedKey(m.key)}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="reports-stats">
-        <StatWidget
-          label="הכנסות"
-          value={loading ? '—' : formatCurrency(summary.income)}
-          accent={false}
-        />
-        <StatWidget
-          label="הוצאות"
-          value={loading ? '—' : formatCurrency(summary.expense)}
-          accent
-        />
-        <StatWidget
-          label="נטו"
-          value={loading ? '—' : formatCurrency(summary.net)}
-          accent={false}
-        />
-      </div>
-
-      <GlassCard className="reports-chart-card">
-        <div className="reports-chart__header">
-          <span className="text-label-bold">תזרים מזומנים — 6 חודשים</span>
-          <Badge color="primary">מ-Supabase</Badge>
+  const chips = (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+      {[
+        { label: 'הכנסות', value: fmt(summary.income),  color: 'var(--pos)' },
+        { label: 'הוצאות', value: fmt(summary.expense), color: 'var(--neg)' },
+        { label: 'מאזן',   value: (summary.net < 0 ? '−' : '') + fmt(summary.net), color: summary.net >= 0 ? 'var(--blue)' : 'var(--neg)' },
+      ].map(s => (
+        <div key={s.label} className="glass" style={{ borderRadius: 18, padding: '13px 12px', textAlign: 'center' }}>
+          <div style={{ fontSize: 12.5, color: 'var(--ink-2)', fontWeight: 600 }}>{s.label}</div>
+          <div className="tnum" style={{ fontSize: 18, fontWeight: 800, marginTop: 4, color: s.color }}>{s.value}</div>
         </div>
+      ))}
+    </div>
+  )
 
-        <div className="reports-cashflow">
-          {cashflow.map(({ monthIndex, income, expense, forecast }) => (
-            <div
-              key={monthIndex}
-              className={`reports-cashflow__col${forecast ? ' reports-cashflow__col--forecast' : ''}`}
-            >
-              <div className="reports-cashflow__bars">
-                <div
-                  className="reports-cashflow__bar reports-cashflow__bar--income"
-                  style={{ height: `${(income / maxVal) * 100}%` }}
-                />
-                <div
-                  className="reports-cashflow__bar reports-cashflow__bar--expense"
-                  style={{ height: `${(expense / maxVal) * 100}%` }}
-                />
+  const cashflowCard = (
+    <div className="glass" style={{ borderRadius: 24, padding: 18 }}>
+      <SectionHead title="תזרים 6 חודשים" />
+      <CashflowChart data={cashflow} />
+    </div>
+  )
+
+  const breakdownCard = (
+    <div className="glass" style={{ borderRadius: 24, padding: 18 }}>
+      <SectionHead title="פילוח לפי קטגוריה" />
+      {breakdown.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '30px 10px', color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 30, marginBottom: 8 }}>🫧</div>
+          <div style={{ fontWeight: 700 }}>לא נמצאו הוצאות לחודש זה</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+          {breakdown.map(item => (
+            <div key={item.cat}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 7 }}>
+                <CatChip color={item.color} name={item.cat} size={36} r={12} />
+                <span style={{ fontWeight: 700, fontSize: 14.5, flex: 1 }}>{item.cat}</span>
+                <span className="tnum" style={{ fontWeight: 800, fontSize: 14.5 }}>{fmt(item.amount)}</span>
+                <span className="tnum" style={{ fontWeight: 700, fontSize: 13, color: 'var(--ink-2)', width: 40, textAlign: 'end' }}>{item.pct}%</span>
               </div>
-              <span className="text-label-light reports-cashflow__label">
-                {HEBREW_MONTHS[monthIndex]?.slice(0, 3)}
-              </span>
+              <div className="bar"><i style={{ width: `${item.pct}%`, background: item.color }} /></div>
             </div>
           ))}
         </div>
+      )}
+    </div>
+  )
 
-        <div className="reports-chart__legend">
-          <span className="reports-legend__dot" style={{ background: '#00a060' }} />
-          <span className="text-label-light">הכנסות</span>
-          <span className="reports-legend__dot" style={{ background: 'var(--color-primary-container)' }} />
-          <span className="text-label-light">הוצאות</span>
-        </div>
-      </GlassCard>
-
-      <div className="reports-type-filter glass-recessed">
-        {['all', 'expense', 'income'].map((t) => (
-          <button
-            key={t}
-            type="button"
-            className={`reports-filter-btn${filterType === t ? ' reports-filter-btn--active' : ''}`}
-            onClick={() => setFilterType(t)}
-          >
-            {t === 'all' ? 'הכל' : t === 'expense' ? 'הוצאות' : 'הכנסות'}
-          </button>
-        ))}
-      </div>
-
-      <GlassCard className="reports-cats-card">
-        <span className="text-headline-md">פירוט קטגוריות — {selected?.label}</span>
-        {loading ? (
-          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>טוען...</p>
-        ) : breakdown.length === 0 ? (
-          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>
-            אין הוצאות לחודש זה
-          </p>
-        ) : (
-          breakdown.map(({ cat, pct, amount, color }) => (
-            <div key={cat} className="reports-cat-row">
-              <div className="reports-cat__label-row">
-                <div className="reports-cat__dot" style={{ background: color }} />
-                <span className="text-label-bold">{cat}</span>
-                <span className="text-label-light reports-cat__pct">{pct}%</span>
-                <span className="text-label-bold" dir="ltr" style={{ marginRight: 'auto' }}>
-                  {formatCurrency(amount)}
-                </span>
-              </div>
-              <ProgressBar value={pct} />
-            </div>
-          ))
-        )}
-      </GlassCard>
-
-      <Button variant="glass" full icon="download">
-        ייצוא PDF
-      </Button>
-    </AppShell>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <h1 style={{ margin: '2px 4px', fontSize: 26, fontWeight: 800 }}>דוחות</h1>
+      {selector}{chips}
+      {wide
+        ? <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>{cashflowCard}{breakdownCard}</div>
+        : <>{cashflowCard}{breakdownCard}</>}
+    </div>
   )
 }

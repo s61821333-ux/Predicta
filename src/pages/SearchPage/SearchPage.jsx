@@ -1,184 +1,95 @@
-import { useEffect, useMemo, useState } from 'react'
-import AppShell from '../../layouts/AppShell'
-import GlassCard from '../../components/GlassCard/GlassCard'
-import InputField from '../../components/InputField/InputField'
-import Badge from '../../components/Badge/Badge'
-import { fetchTransactions, deleteTransaction, getAuthUserId } from '../../lib/db'
-import { formatTxnAmount, formatDateFull } from '../../utils/format'
-import './SearchPage.css'
+import { useEffect, useState } from 'react'
+import { useUser } from '../../context/UserContext'
+import { fetchTransactions, deleteTransaction } from '../../lib/db'
+import TxRow from '../../components/TxRow/TxRow'
+import { Confirm } from '../../components/Modal/Modal'
+import Icon from '../../components/Icon/Icon'
 
 export default function SearchPage() {
-  const [transactions, setTransactions] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [query, setQuery] = useState('')
+  const { profile } = useUser()
+  const [q, setQ] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
-  const [catFilter, setCatFilter] = useState('הכל')
-  const [selected, setSelected] = useState(null)
-
-  async function loadTransactions() {
-    const userId = await getAuthUserId()
-    if (!userId) return
-    const { data } = await fetchTransactions(userId)
-    setTransactions(data)
-    setLoading(false)
-  }
+  const [txs, setTxs] = useState([])
+  const [del, setDel] = useState(null)
 
   useEffect(() => {
-    loadTransactions()
-  }, [])
+    if (!profile?.id) return
+    fetchTransactions(profile.id).then(({ data }) => setTxs(data || []))
+  }, [profile?.id])
 
-  const categoryNames = useMemo(() => {
-    const names = new Set(transactions.map((t) => t.category?.name).filter(Boolean))
-    return ['הכל', ...names]
-  }, [transactions])
-
-  const filtered = transactions.filter((t) => {
-    const label = t.description || t.category?.name || ''
-    const cat = t.category?.name ?? ''
-    const matchQuery = !query || label.includes(query) || cat.includes(query)
-    const matchType = typeFilter === 'all' || t.type === typeFilter
-    const matchCat = catFilter === 'הכל' || cat === catFilter
-    return matchQuery && matchType && matchCat
-  })
-
-  async function handleDelete(id) {
-    await deleteTransaction(id)
-    setSelected(null)
-    loadTransactions()
+  const handleDelete = async () => {
+    if (!del) return
+    await deleteTransaction(del.id)
+    setTxs(prev => prev.filter(t => t.id !== del.id))
+    setDel(null)
   }
 
+  const filtered = txs.filter(t => {
+    if (typeFilter !== 'all' && t.type !== typeFilter) return false
+    if (q) {
+      const hay = ((t.description || '') + ' ' + (t.category?.name || '')).toLowerCase()
+      if (!hay.includes(q.toLowerCase())) return false
+    }
+    return true
+  })
+
+  const groups = {}
+  filtered.forEach(t => {
+    const dt = new Date(t.date)
+    const now = new Date()
+    const diff = Math.round((now - dt) / 86400000)
+    const key = t.status === 'future' ? 'עתידי' : diff === 0 ? 'היום' : diff === 1 ? 'אתמול' : dt.toLocaleDateString('he-IL')
+    if (!groups[key]) groups[key] = []
+    groups[key].push(t)
+  })
+
   return (
-    <AppShell>
-      <div className="page-header">
-        <h1 className="text-headline-lg">חיפוש עסקאות</h1>
-        <p className="text-body-md page-subtitle">
-          {loading ? 'טוען...' : `${transactions.length} עסקאות מהמסד נתונים`}
-        </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <h1 style={{ margin: '2px 4px', fontSize: 26, fontWeight: 800 }}>חיפוש והיסטוריה</h1>
+
+      <div className="glass" style={{ borderRadius: 18, padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Icon name="search" size={20} style={{ color: 'var(--ink-2)' }} />
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="חפש לפי תיאור או קטגוריה…"
+          style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--ink)', fontSize: 16, padding: '12px 0' }} />
+        {q && <button className="tap" onClick={() => setQ('')} style={{ color: 'var(--ink-3)' }}><Icon name="close" size={18}/></button>}
       </div>
 
-      <InputField
-        label=""
-        placeholder="חפש לפי שם, קטגוריה..."
-        icon="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <div className="seg">
+        <button className={typeFilter === 'all'     ? 'on neu' : ''} onClick={() => setTypeFilter('all')}>הכל</button>
+        <button className={typeFilter === 'expense' ? 'on exp' : ''} onClick={() => setTypeFilter('expense')}>הוצאות</button>
+        <button className={typeFilter === 'income'  ? 'on inc' : ''} onClick={() => setTypeFilter('income')}>הכנסות</button>
+      </div>
 
-      <div className="search-filters">
-        <div className="search-type-toggle glass-recessed">
-          {['all', 'expense', 'income'].map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={`search-type-btn${typeFilter === t ? ' search-type-btn--active' : ''}`}
-              onClick={() => setTypeFilter(t)}
-            >
-              {t === 'all' ? 'הכל' : t === 'expense' ? 'הוצאות' : 'הכנסות'}
-            </button>
+      {filtered.length === 0 ? (
+        <div className="glass" style={{ borderRadius: 24, padding: '44px 20px', textAlign: 'center', color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 38, marginBottom: 10 }}>🔍</div>
+          <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--ink)' }}>לא נמצאו תוצאות</div>
+          <div style={{ fontSize: 14, marginTop: 4 }}>נסה לשנות את החיפוש או המסננים</div>
+          {(q || typeFilter !== 'all') && (
+            <button className="btn btn-ghost" style={{ marginTop: 16, height: 44 }} onClick={() => { setQ(''); setTypeFilter('all') }}>נקה מסננים</button>
+          )}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {Object.entries(groups).map(([label, items]) => (
+            <div key={label}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-2)', margin: '0 4px 6px' }}>{label}</div>
+              <div className="glass" style={{ borderRadius: 22, padding: '6px 10px' }}>
+                {items.map(t => <TxRow key={t.id} t={t} onDelete={setDel} />)}
+              </div>
+            </div>
           ))}
         </div>
-      </div>
+      )}
 
-      <div className="search-cat-chips hide-scrollbar">
-        {categoryNames.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            className={`txn-cat-chip${catFilter === cat ? ' txn-cat-chip--active' : ''}`}
-            onClick={() => setCatFilter(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      <div className="search-results-header">
-        <span className="text-label-bold">{filtered.length} תוצאות</span>
-        {(query || typeFilter !== 'all' || catFilter !== 'הכל') && (
-          <button
-            type="button"
-            className="search-clear text-label-light"
-            onClick={() => { setQuery(''); setTypeFilter('all'); setCatFilter('הכל') }}
-          >
-            נקה סינון
-          </button>
-        )}
-      </div>
-
-      <div className="search-results">
-        {loading ? (
-          <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>טוען עסקאות...</p>
-        ) : filtered.length === 0 ? (
-          <GlassCard className="search-empty">
-            <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--color-outline)', fontVariationSettings: "'FILL' 1" }}>search_off</span>
-            <p className="text-body-md" style={{ color: 'var(--color-on-surface-variant)' }}>לא נמצאו עסקאות</p>
-          </GlassCard>
-        ) : (
-          filtered.map((txn) => {
-            const label = txn.description || txn.category?.name || 'עסקה'
-            const icon = txn.category?.icon_name ?? 'receipt'
-            return (
-              <GlassCard
-                key={txn.id}
-                className={`search-txn-card${selected === txn.id ? ' search-txn-card--open' : ''}`}
-                onClick={() => setSelected(selected === txn.id ? null : txn.id)}
-              >
-                <div className="search-txn__row">
-                  <div
-                    className="search-txn__icon glass-recessed"
-                    style={{ color: txn.type === 'income' ? '#00a060' : txn.category?.color_hex ?? 'var(--color-primary-container)' }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
-                  </div>
-                  <div className="search-txn__info">
-                    <div className="search-txn__name-row">
-                      <span className="text-label-bold">{label}</span>
-                      {txn.is_temporary && <Badge color="primary">זמנית</Badge>}
-                    </div>
-                    <span className="text-label-light">
-                      {txn.category?.name ?? '—'} · {formatDateFull(txn.date)}
-                    </span>
-                  </div>
-                  <span
-                    className="text-label-bold search-txn__amount"
-                    dir="ltr"
-                    style={{ color: txn.type === 'income' ? '#00a060' : 'var(--color-on-surface)' }}
-                  >
-                    {formatTxnAmount(txn.amount, txn.type)}
-                  </span>
-                </div>
-
-                {selected === txn.id && (
-                  <div className="search-txn__detail glass-recessed">
-                    <div className="search-txn__detail-row">
-                      <span className="text-label-light">קטגוריה</span>
-                      <span className="text-label-bold">{txn.category?.name ?? '—'}</span>
-                    </div>
-                    <div className="search-txn__detail-row">
-                      <span className="text-label-light">תאריך</span>
-                      <span className="text-label-bold" dir="ltr">{formatDateFull(txn.date)}</span>
-                    </div>
-                    <div className="search-txn__detail-row">
-                      <span className="text-label-light">סוג</span>
-                      <span className="text-label-bold">{txn.type === 'expense' ? 'הוצאה' : 'הכנסה'}</span>
-                    </div>
-                    <div className="search-txn__actions">
-                      <button
-                        type="button"
-                        className="search-txn__action-btn search-txn__action-btn--delete text-label-bold"
-                        onClick={(e) => { e.stopPropagation(); handleDelete(txn.id) }}
-                      >
-                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span>
-                        מחיקה
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </GlassCard>
-            )
-          })
-        )}
-      </div>
-    </AppShell>
+      <Confirm
+        open={!!del}
+        title="מחיקת עסקה"
+        danger confirmLabel="מחק"
+        body={`האם אתה בטוח שברצונך למחוק את "${del?.description || del?.category?.name || 'עסקה'}"?`}
+        onConfirm={handleDelete}
+        onClose={() => setDel(null)}
+      />
+    </div>
   )
 }
