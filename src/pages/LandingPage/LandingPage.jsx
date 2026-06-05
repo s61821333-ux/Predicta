@@ -24,8 +24,7 @@ export default function LandingPage() {
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <ThemeToggle />
-            <button className="btn btn-ghost tap" onClick={() => navigate('/login')} style={{ height: 40, padding: '0 18px', fontSize: 14 }}>כניסה</button>
-            <button className="btn btn-primary tap" onClick={() => navigate('/register')} style={{ height: 40, padding: '0 18px', fontSize: 14 }}>הרשמה חינם</button>
+            <button className="btn btn-primary tap" onClick={() => navigate('/login')} style={{ height: 40, padding: '0 18px', fontSize: 14 }}>כניסה</button>
           </div>
         </div>
       </header>
@@ -45,11 +44,8 @@ export default function LandingPage() {
             אפליקציית ניהול הכספים שמחברת בין הוצאות, תקציבים, ויועץ AI אישי — הכל במקום אחד.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary tap" onClick={() => navigate('/register')} style={{ height: 54, fontSize: 17, padding: '0 28px' }}>
-              <Icon name="arrowDown" size={20} sw={2.4} /> התחל בחינם
-            </button>
-            <button className="btn btn-ghost tap" onClick={() => navigate('/login')} style={{ height: 54, fontSize: 16, padding: '0 22px' }}>
-              כניסה לחשבון קיים
+            <button className="btn btn-primary tap" onClick={() => navigate('/login')} style={{ height: 54, fontSize: 17, padding: '0 28px' }}>
+              <Icon name="arrowDown" size={20} sw={2.4} /> התחל עכשיו
             </button>
           </div>
         </div>

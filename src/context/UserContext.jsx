@@ -23,7 +23,19 @@ export function UserProvider({ children }) {
       fetchUserSettings(user.id),
     ])
 
-    setProfile(profileData)
+    // Merge Google OAuth metadata into profile when DB row is missing names
+    const meta = user.user_metadata || {}
+    const merged = profileData
+      ? {
+          ...profileData,
+          first_name: profileData.first_name || meta.given_name || meta.full_name?.split(' ')[0] || '',
+          last_name:  profileData.last_name  || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || '',
+          avatar_url: profileData.avatar_url || meta.avatar_url || meta.picture || null,
+          email:      profileData.email      || user.email || '',
+        }
+      : null
+
+    setProfile(merged)
     setSettings(settingsData)
     setLoading(false)
   }, [])

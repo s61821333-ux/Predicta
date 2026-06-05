@@ -1,5 +1,15 @@
 import { supabase } from './supabase'
 
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/dashboard`,
+    },
+  })
+  return { error }
+}
+
 export async function signUpUser({ email, password, firstName, lastName, phone }) {
   const { data, error } = await supabase.auth.signUp({
     email,
