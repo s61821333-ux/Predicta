@@ -16,7 +16,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error: err } = await signInUser(email, password)
+    const { error: err } = await signInUser({ email, password })
     setLoading(false)
     if (err) { setError(err.message || 'שגיאה בכניסה'); return }
     navigate('/dashboard')

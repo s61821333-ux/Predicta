@@ -15,7 +15,7 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error: err } = await signUpUser(f.email, f.password, { first_name: f.firstName, last_name: f.lastName })
+    const { error: err } = await signUpUser({ email: f.email, password: f.password, firstName: f.firstName, lastName: f.lastName })
     setLoading(false)
     if (err) { setError(err.message || 'שגיאה בהרשמה'); return }
     navigate('/dashboard')
