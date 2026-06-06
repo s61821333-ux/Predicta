@@ -7,4 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     experimental: { passkey: true },
   },
+  global: {
+    fetch: (url, init) => window.fetch(url, init),
+  },
 })

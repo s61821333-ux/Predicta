@@ -18,6 +18,14 @@ export async function sendRegistrationOtp({ email, firstName, lastName }) {
       shouldCreateUser: true,
     },
   })
+  if (error) {
+    const msg = error.message ?? ''
+    if (msg.includes('Invalid value') || msg.includes('fetch')) {
+      error.message = 'בעיית חיבור לשרת. נסה במצב גלישה פרטית, או בדוק שאין תוסף חוסם בדפדפן.'
+    } else if (msg.toLowerCase().includes('otp_disabled') || msg.toLowerCase().includes('signups not allowed')) {
+      error.message = 'שליחת קודים באימייל אינה מופעלת בפרויקט Supabase. יש להפעיל Email Provider תחת Authentication → Providers.'
+    }
+  }
   return { error }
 }
 
