@@ -10,43 +10,45 @@ export async function signInWithGoogle() {
   return { error }
 }
 
-export async function signUpUser({ email, password, firstName, lastName, phone }) {
-  const { data, error } = await supabase.auth.signUp({
+export async function sendRegistrationOtp({ email, firstName, lastName }) {
+  const { error } = await supabase.auth.signInWithOtp({
     email,
-    password,
     options: {
-      data: {
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-        phone: phone?.trim() || null,
-      },
+      data: { first_name: firstName.trim(), last_name: lastName.trim() },
+      shouldCreateUser: true,
     },
   })
+  return { error }
+}
 
+export async function verifyOtpAndRegisterPasskey({ email, token, firstName, lastName }) {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'email',
+  })
   if (error) return { error, session: null }
 
-  if (data.user && data.session) {
-    const { error: profileError } = await supabase.from('users').upsert({
+  if (data.user) {
+    await supabase.from('users').upsert({
       id: data.user.id,
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       email,
-      phone: phone?.trim() || null,
     })
-
-    if (profileError) return { error: profileError, session: data.session }
-
     await supabase.from('user_settings').upsert({ user_id: data.user.id })
   }
 
-  return { data, session: data.session, error: null }
+  const { error: passkeyError } = await supabase.auth.registerPasskey()
+  if (passkeyError) return { error: passkeyError, session: data.session }
+
+  return { error: null, session: data.session }
 }
 
-export async function signInUser({ email, password }) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+export async function signInWithPasskey() {
+  const { data, error } = await supabase.auth.signInWithPasskey()
   if (error) return { error, session: null }
-
-  return { data, session: data.session, error: null }
+  return { data, session: data?.session, error: null }
 }
 
 export async function getCurrentUserProfile() {
