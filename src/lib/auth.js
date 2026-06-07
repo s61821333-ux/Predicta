@@ -16,6 +16,7 @@ export async function sendRegistrationOtp({ email, firstName, lastName }) {
     options: {
       data: { first_name: firstName.trim(), last_name: lastName.trim() },
       shouldCreateUser: true,
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   })
   if (error) {

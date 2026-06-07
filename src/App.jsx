@@ -15,6 +15,7 @@ import ProfilePage        from './pages/ProfilePage/ProfilePage'
 import SettingsPage       from './pages/SettingsPage/SettingsPage'
 import AdminPage          from './pages/AdminPage/AdminPage'
 
+import AuthCallbackPage    from './pages/AuthCallbackPage/AuthCallbackPage'
 import ProtectedRoute      from './components/ProtectedRoute/ProtectedRoute'
 import AuthenticatedLayout from './layouts/AuthenticatedLayout'
 import AppShell            from './layouts/AppShell'
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
         <Route element={<ProtectedRoute><AuthenticatedLayout /></ProtectedRoute>}>
           <Route element={<AppShell />}>
