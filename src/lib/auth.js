@@ -45,7 +45,7 @@ export async function verifyOtpAndRegisterPasskey({ email, token, firstName, las
     await supabase.from('user_settings').upsert({ user_id: data.user.id })
   }
 
-  const { error: passkeyError } = await supabase.auth.registerPasskey()
+  const { error: passkeyError } = await registerPasskey()
   if (passkeyError) return { error: passkeyError, session: data.session }
 
   return { error: null, session: data.session }
@@ -53,8 +53,26 @@ export async function verifyOtpAndRegisterPasskey({ email, token, firstName, las
 
 export async function signInWithPasskey() {
   const { data, error } = await supabase.auth.signInWithPasskey()
-  if (error) return { error, session: null }
+  if (error) {
+    const msg = error.message ?? ''
+    if (msg.includes('RP ID') || msg.includes('rpId') || msg.includes('invalid for this domain')) {
+      error.message = 'מפתח הגישה מוגדר לדומיין הייצור בלבד. כנס דרך הכתובת הרשמית של האפליקציה.'
+    }
+    return { error, session: null }
+  }
   return { data, session: data?.session, error: null }
+}
+
+export async function registerPasskey() {
+  const { error } = await supabase.auth.registerPasskey()
+  if (error) {
+    const msg = error.message ?? ''
+    if (msg.includes('RP ID') || msg.includes('rpId') || msg.includes('invalid for this domain')) {
+      error.message = 'מפתח הגישה מוגדר לדומיין הייצור בלבד. כנס דרך הכתובת הרשמית של האפליקציה.'
+    }
+    return { error }
+  }
+  return { error: null }
 }
 
 export async function getCurrentUserProfile() {
