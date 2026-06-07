@@ -8,13 +8,23 @@ import Icon from '../../components/Icon/Icon'
 
 const PROMPTS = [
   'מה ההוצאה הגדולה שלי החודש?',
-  'איך אני בהשוואה לחודש שעבר?',
-  'כמה חסכתי השנה?',
+  'איך נראה החיסכון שלי?',
+  'תן לי סיכום פיננסי של החודש',
   'מה הקטגוריה הכי יקרה שלי?',
 ]
 
 const nf = new Intl.NumberFormat('en-US')
 const fmt = n => '₪' + nf.format(Math.round(Math.abs(n)))
+
+// Detect contextual action button from the user's message
+function detectAction(text) {
+  const lower = text.toLowerCase()
+  if (/(דוח|דוחות|קטגוריות|פירוט|breakdown)/.test(lower))
+    return { label: 'צפה בדוחות', to: '/reports' }
+  if (/(הוסף|עסקה חדשה|הכנסה חדשה|הוצאה חדשה)/.test(lower))
+    return { label: 'הוסף עסקה', to: '/new-transaction' }
+  return null
+}
 
 function TypingDots() {
   return (
@@ -39,7 +49,7 @@ function Bubble({ msg, navigate }) {
       <AiOrb size={30} />
       <div className="glass" style={{ borderRadius: '20px 20px 20px 6px', padding: '13px 16px' }}>
         {msg.title && <div style={{ fontWeight: 800, fontSize: 15.5, marginBottom: 5 }}>{msg.title}</div>}
-        <div style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--ink)' }}>{msg.text}</div>
+        <div style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--ink)', whiteSpace: 'pre-wrap' }}>{msg.text}</div>
         {msg.stats && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
             {msg.stats.map((s, i) => (
@@ -62,42 +72,6 @@ function Bubble({ msg, navigate }) {
   )
 }
 
-function buildReply(text, txs, summary) {
-  const lower = text.toLowerCase()
-  const { income, expense } = summary
-
-  const byCat = {}
-  txs.forEach(t => {
-    if (t.type !== 'expense') return
-    const name = t.category?.name || 'אחר'
-    const color = t.category?.color_hex || '#8A93A8'
-    if (!byCat[name]) byCat[name] = { amt: 0, color }
-    byCat[name].amt += Number(t.amount)
-  })
-  const top = Object.entries(byCat).sort((a, b) => b[1].amt - a[1].amt).map(([label, { amt, color }]) => ({ label, value: fmt(amt), color }))
-
-  if (/(הגדול|יקר|הכי הרבה|על מה)/.test(lower)) {
-    return {
-      title: top[0] ? `ההוצאה הגדולה שלך: ${top[0].label}` : 'לא נמצאו הוצאות',
-      text: top[0] ? `הוצאת ${top[0].value} על ${top[0].label} החודש — ${expense > 0 ? Math.round((Object.values(byCat)[0]?.amt / expense) * 100) : 0}% מסך ההוצאות.` : 'אין נתוני הוצאות לחודש זה.',
-      stats: top.slice(0, 3),
-      action: { label: 'צפה בדוח מלא', to: '/reports' },
-    }
-  }
-  if (/(חסכ|חיסכון|נשאר|יתרה)/.test(lower)) {
-    const net = income - expense
-    const rate = income > 0 ? Math.round((net / income) * 100) : 0
-    return {
-      title: 'החיסכון שלך החודש',
-      text: `הכנסת ${fmt(income)} והוצאת ${fmt(expense)}. חסכת ${fmt(net)} — שיעור חיסכון של ${rate}%. ${rate > 20 ? 'כל הכבוד! 🌱' : 'יש מקום לשיפור 💪'}`,
-    }
-  }
-  if (/(תקציב|חרג|הגעתי)/.test(lower)) {
-    return { text: 'עבור לדף הדוחות כדי לראות את מצב התקציבים שלך.', action: { label: 'לדוחות', to: '/reports' } }
-  }
-  return { text: 'אני כאן כדי לעזור לך להבין את הכסף שלך. נסה לשאול אותי על הוצאות, חיסכון, או תקציבים 👇' }
-}
-
 export default function AIChatPage() {
   const { profile } = useUser()
   const navigate = useNavigate()
@@ -105,32 +79,58 @@ export default function AIChatPage() {
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [txs, setTxs] = useState([])
-  const [monthlySummary, setMonthlySummary] = useState({ income: 0, expense: 0 })
+  const [monthlySummary, setMonthlySummary] = useState({ income: 0, expense: 0, net: 0 })
   const [chat, setChat] = useState([
-    { is_ai: true, text: 'שלום! אני פְּרֶדִי, היועץ הפיננסי שלך. אני יכול לנתח את ההוצאות, החיסכון והתקציבים שלך. במה אפשר לעזור?' }
+    { is_ai: true, text: 'שלום! אני פְּרֶדִי, היועץ הפיננסי שלך. אני מנתח את הנתונים הפיננסיים האמיתיים שלך בזמן אמת. במה אפשר לעזור?' }
   ])
 
   useEffect(() => {
     if (!profile?.id) return
     const now = new Date()
-    fetchTransactions(profile.id, { month: now.getMonth() + 1, year: now.getFullYear() }).then(({ data }) => setTxs(data || []))
-    fetchMonthlySummary(profile.id, now.getMonth() + 1, now.getFullYear()).then(s => setMonthlySummary(s))
+    const month = now.getMonth() + 1
+    const year = now.getFullYear()
+    fetchTransactions(profile.id, { month, year }).then(({ data }) => setTxs(data || []))
+    fetchMonthlySummary(profile.id, month, year).then(s => setMonthlySummary(s))
   }, [profile?.id])
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [chat, typing])
 
-  const send = (txt) => {
+  const send = async (txt) => {
     const v = (txt ?? input).trim()
-    if (!v) return
+    if (!v || typing) return
+
     setChat(c => [...c, { is_ai: false, text: v }])
     setInput('')
     setTyping(true)
-    setTimeout(() => {
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: v,
+          transactions: txs,
+          summary: monthlySummary,
+          chatHistory: chat,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'שגיאה לא ידועה')
+      }
+
+      const action = detectAction(v)
+      setChat(c => [...c, { is_ai: true, text: data.text, action }])
+    } catch (err) {
+      console.error('Chat error:', err)
+      setChat(c => [...c, { is_ai: true, text: 'מצטער, אירעה שגיאה. בדוק שה-API key מוגדר בהגדרות Vercel ונסה שוב.' }])
+    } finally {
       setTyping(false)
-      setChat(c => [...c, { is_ai: true, ...buildReply(v, txs, monthlySummary) }])
-    }, 950)
+    }
   }
 
   const showPrompts = chat.length <= 1
@@ -142,15 +142,21 @@ export default function AIChatPage() {
         <div>
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800 }}>פְּרֶדִי</h1>
           <div style={{ fontSize: 13, color: 'var(--pos)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--pos)' }} /> היועץ הפיננסי שלך
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--pos)' }} /> ניתוח בזמן אמת
           </div>
         </div>
+        {txs.length > 0 && (
+          <div style={{ marginRight: 'auto', fontSize: 12, color: 'var(--ink-2)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <Icon name="check" size={13} sw={2.5} style={{ color: 'var(--pos)' }} />
+            {txs.length} עסקאות • {fmt(monthlySummary.expense)} הוצאות
+          </div>
+        )}
       </div>
 
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, padding: '8px 2px', minHeight: 0 }}>
         {chat.map((msg, i) => <Bubble key={i} msg={msg} navigate={navigate} />)}
         {typing && (
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexDirection: 'row-reverse' }}>
             <AiOrb size={30} thinking />
             <div className="glass" style={{ borderRadius: '20px 20px 20px 6px', padding: '12px 16px' }}><TypingDots /></div>
           </div>
@@ -166,11 +172,13 @@ export default function AIChatPage() {
       )}
 
       <div className="glass glass-strong" style={{ borderRadius: 22, padding: 7, display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}
+        <input value={input} onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
           placeholder="שאל את פרדי כל דבר…"
-          style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--ink)', fontSize: 16, padding: '0 12px' }} />
-        <button className="tap" onClick={() => send()} aria-label="שלח"
-          style={{ width: 44, height: 44, borderRadius: 14, display: 'grid', placeItems: 'center', color: '#fff', background: input.trim() ? 'linear-gradient(180deg, var(--blue-300), var(--blue))' : 'var(--hairline)', boxShadow: input.trim() ? '0 6px 16px var(--blue-glow)' : 'none', transition: 'all 0.2s' }}>
+          disabled={typing}
+          style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--ink)', fontSize: 16, padding: '0 12px', opacity: typing ? 0.5 : 1 }} />
+        <button className="tap" onClick={() => send()} disabled={typing || !input.trim()} aria-label="שלח"
+          style={{ width: 44, height: 44, borderRadius: 14, display: 'grid', placeItems: 'center', color: '#fff', background: input.trim() && !typing ? 'linear-gradient(180deg, var(--blue-300), var(--blue))' : 'var(--hairline)', boxShadow: input.trim() && !typing ? '0 6px 16px var(--blue-glow)' : 'none', transition: 'all 0.2s' }}>
           <Icon name="send2" size={22} sw={2.2} />
         </button>
       </div>
