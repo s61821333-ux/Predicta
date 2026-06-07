@@ -27,7 +27,7 @@ export default function RegisterPage() {
 
   const verifyAndRegister = async (e) => {
     e.preventDefault()
-    if (otp.length < 6) { setError('הכנס קוד בן 6 ספרות'); return }
+    if (otp.length < 8) { setError('הכנס קוד בן 8 ספרות'); return }
     setError('')
     setLoading(true)
     const { error: err } = await verifyOtpAndRegisterPasskey({ email, token: otp, firstName, lastName })
@@ -106,8 +106,8 @@ export default function RegisterPage() {
                 <input
                   className="field"
                   value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="123456"
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                  placeholder="12345678"
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   style={{ textAlign: 'center', fontSize: 24, letterSpacing: 10, fontWeight: 700 }}
